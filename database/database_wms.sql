@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2026 at 10:26 AM
+-- Generation Time: Apr 06, 2026 at 05:54 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,7 +51,8 @@ INSERT INTO `barang` (`id`, `id_supplier`, `id_lokasi`, `nama`, `deskripsi`, `qt
 (73, 2, 1, 'Lanyard Absorber', '', 0, 7, NULL, 'LA 001'),
 (74, 31, 1, 'Mesin Router Hitachi M12SA2', '', 1, 7, NULL, 'MR 001'),
 (75, 31, 1, 'Pipa Besi', 'tes', 10, 1, 'uploads/items/2e61e4560062aec4a907b9494a9dbcda.png', 'TES001'),
-(76, 1, 1, '123123123', 'deskripsi', 4, 1, 'uploads/items/8031d2adecb211973c6e80776223f537.jpg', '123123123');
+(76, 1, 1, '123123123', 'deskripsi', 4, 1, 'uploads/items/8031d2adecb211973c6e80776223f537.jpg', '123123123'),
+(77, 9, 1, 'Gas LPJ', 'tes deskripsi', 10, 4, NULL, 'TES001');
 
 -- --------------------------------------------------------
 
@@ -96,6 +97,22 @@ CREATE TABLE `barang_keluar_detail` (
 
 INSERT INTO `barang_keluar_detail` (`id`, `id_barang_keluar`, `id_barang`, `id_gudang`, `qty`) VALUES
 (57, 43, 72, 8, 3);
+
+--
+-- Triggers `barang_keluar_detail`
+--
+DELIMITER $$
+CREATE TRIGGER `kurangi_barang_gudang` BEFORE INSERT ON `barang_keluar_detail` FOR EACH ROW BEGIN
+  -- Kurangi stok di gudang terkait
+  UPDATE stok_gudang 
+  SET qty = qty - NEW.qty 
+  WHERE id_gudang = NEW.id_gudang AND id_barang = NEW.id_barang;
+  
+  -- Update total qty di tabel barang
+  UPDATE barang SET qty = qty - NEW.qty WHERE id = NEW.id_barang;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -142,6 +159,22 @@ INSERT INTO `barang_masuk_detail` (`id`, `id_barang_masuk`, `id_barang`, `id_gud
 (55, 50, 70, 2, 5),
 (56, 50, 72, 8, 5),
 (57, 51, 68, 2, 5);
+
+--
+-- Triggers `barang_masuk_detail`
+--
+DELIMITER $$
+CREATE TRIGGER `tambah_barang_gudang` AFTER INSERT ON `barang_masuk_detail` FOR EACH ROW BEGIN
+  -- Update atau insert ke stok_gudang
+  INSERT INTO stok_gudang (id_gudang, id_barang, qty)
+  VALUES (NEW.id_gudang, NEW.id_barang, NEW.qty)
+  ON DUPLICATE KEY UPDATE qty = qty + NEW.qty;
+  
+  -- Update total qty di tabel barang
+  UPDATE barang SET qty = qty + NEW.qty WHERE id = NEW.id_barang;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -252,6 +285,13 @@ CREATE TABLE `permintaan_barang` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `permintaan_barang`
+--
+
+INSERT INTO `permintaan_barang` (`id`, `kode_permintaan`, `id_user`, `id_gudang_asal`, `id_gudang_tujuan`, `tanggal_permintaan`, `tanggal_diperlukan`, `status`, `keterangan`, `alasan_tolak`, `created_at`, `updated_at`) VALUES
+(22, 'PO-20260406-0001', 7, 6, 2, '2026-04-06', '2026-04-08', 'menunggu', 'tes', NULL, '2026-04-06 09:55:31', '2026-04-06 09:55:31');
+
 -- --------------------------------------------------------
 
 --
@@ -265,6 +305,13 @@ CREATE TABLE `permintaan_barang_detail` (
   `qty` int(11) NOT NULL,
   `keterangan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `permintaan_barang_detail`
+--
+
+INSERT INTO `permintaan_barang_detail` (`id`, `id_permintaan`, `id_barang`, `qty`, `keterangan`) VALUES
+(27, 22, 72, 2, '');
 
 -- --------------------------------------------------------
 
@@ -320,7 +367,8 @@ INSERT INTO `stok_gudang` (`id`, `id_gudang`, `id_barang`, `qty`, `stok_minimum`
 (164, 6, 73, 0, 0, '2026-02-26 16:45:39'),
 (170, 6, 75, 10, 0, NULL),
 (177, 8, 76, 0, 0, '2026-02-27 15:16:13'),
-(178, 2, 76, 4, 0, NULL);
+(178, 2, 76, 4, 0, NULL),
+(180, 6, 77, 10, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -420,6 +468,31 @@ CREATE TABLE `transfer_gudang_detail` (
 INSERT INTO `transfer_gudang_detail` (`id`, `id_transfer`, `id_barang`, `qty`) VALUES
 (67, 61, 70, 8);
 
+--
+-- Triggers `transfer_gudang_detail`
+--
+DELIMITER $$
+CREATE TRIGGER `transfer_barang_gudang` AFTER INSERT ON `transfer_gudang_detail` FOR EACH ROW BEGIN
+  DECLARE gudang_asal INT;
+  DECLARE gudang_tujuan INT;
+  
+  -- Ambil id gudang asal dan tujuan dari header transfer
+  SELECT id_gudang_asal, id_gudang_tujuan INTO gudang_asal, gudang_tujuan
+  FROM transfer_gudang WHERE id = NEW.id_transfer;
+  
+  -- Kurangi stok di gudang asal
+  UPDATE stok_gudang 
+  SET qty = qty - NEW.qty 
+  WHERE id_gudang = gudang_asal AND id_barang = NEW.id_barang;
+  
+  -- Tambah stok di gudang tujuan
+  INSERT INTO stok_gudang (id_gudang, id_barang, qty)
+  VALUES (gudang_tujuan, NEW.id_barang, NEW.qty)
+  ON DUPLICATE KEY UPDATE qty = qty + NEW.qty;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -444,8 +517,57 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `nama`, `email`, `password`, `telefon`, `ktp`, `id_gudang`, `role`, `status`) VALUES
 (1, 'Admin Lixicon', 'admin@lixicon.com', '$2y$10$enqLETuukjYPPDv7u1vQ8OPxgdR7d5M/qzQCoCqh/a5vK.9ZbnQ8q', '085267865288', '17081010000', NULL, 'admin', 'aktif'),
-(4, 'Melvin Sven Kho', 'melvin@gmail.com', '$2y$10$b6GxCwdydszoTtoet7HaR.LzlUVFyBU8kGEh8gIvfv/xN0KiogV9W', '085267865288', '091823012839', 2, 'staff', 'aktif'),
-(6, 'TestUser', 'test@gmail.com', '$2y$10$uprEyrctNZsCMJXeIXbLv.5k.3x33Mc9Ki.195a/vAZyMeE4PTy7m', '085267865288', '01283012938913', 2, 'staff', 'aktif');
+(7, 'Admin Staff Prominade', 'prominade@lixicon.com', '$2y$10$Z2/3tFWebJ5cMlX1td/yz.uK/uqtf9wmOzuOwA.PZgkCNlBNXItle', '085267865288', '0000000000', NULL, 'staff', 'aktif');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_ringkasan_gudang`
+-- (See below for the actual view)
+--
+CREATE TABLE `v_ringkasan_gudang` (
+`id_gudang` int(11)
+,`nama_gudang` varchar(100)
+,`alamat` varchar(255)
+,`jumlah_jenis_barang` bigint(21)
+,`total_qty` decimal(32,0)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_stok_gudang`
+-- (See below for the actual view)
+--
+CREATE TABLE `v_stok_gudang` (
+`id` int(11)
+,`id_gudang` int(11)
+,`nama_gudang` varchar(100)
+,`id_barang` int(11)
+,`nama_barang` varchar(50)
+,`nama_satuan` varchar(30)
+,`qty` int(11)
+,`stok_minimum` int(11)
+,`status_stok` varchar(11)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_ringkasan_gudang`
+--
+DROP TABLE IF EXISTS `v_ringkasan_gudang`;
+
+CREATE VIEW `v_ringkasan_gudang` AS SELECT `g`.`id` AS `id_gudang`, `g`.`nama` AS `nama_gudang`, `g`.`alamat` AS `alamat`, count(distinct `sg`.`id_barang`) AS `jumlah_jenis_barang`, coalesce(sum(`sg`.`qty`),0) AS `total_qty` FROM ((`gudang` `g` left join `stok_gudang` `sg` on(`g`.`id` = `sg`.`id_gudang`)) left join `barang` `b` on(`sg`.`id_barang` = `b`.`id`)) GROUP BY `g`.`id` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_stok_gudang`
+--
+DROP TABLE IF EXISTS `v_stok_gudang`;
+
+CREATE VIEW `v_stok_gudang` AS SELECT `sg`.`id` AS `id`, `g`.`id` AS `id_gudang`, `g`.`nama` AS `nama_gudang`, `b`.`id` AS `id_barang`, `b`.`nama` AS `nama_barang`, `s`.`nama` AS `nama_satuan`, `sg`.`qty` AS `qty`, `sg`.`stok_minimum` AS `stok_minimum`, CASE WHEN `sg`.`qty` <= 0 THEN 'Habis' WHEN `sg`.`qty` <= `sg`.`stok_minimum` THEN 'Stok Rendah' ELSE 'Tersedia' END AS `status_stok` FROM (((`stok_gudang` `sg` join `gudang` `g` on(`sg`.`id_gudang` = `g`.`id`)) join `barang` `b` on(`sg`.`id_barang` = `b`.`id`)) join `satuan` `s` on(`b`.`id_satuan` = `s`.`id`)) ;
 
 --
 -- Indexes for dumped tables
@@ -600,7 +722,7 @@ ALTER TABLE `transfer_gudang_detail`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_gudang` (`id_gudang`);
+  ADD KEY `user_ibfk_1` (`id_gudang`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -610,7 +732,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `barang`
 --
 ALTER TABLE `barang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `barang_keluar`
@@ -664,13 +786,13 @@ ALTER TABLE `lokasi_barang`
 -- AUTO_INCREMENT for table `permintaan_barang`
 --
 ALTER TABLE `permintaan_barang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `permintaan_barang_detail`
 --
 ALTER TABLE `permintaan_barang_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `satuan`
@@ -682,7 +804,7 @@ ALTER TABLE `satuan`
 -- AUTO_INCREMENT for table `stok_gudang`
 --
 ALTER TABLE `stok_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --
 -- AUTO_INCREMENT for table `supplier`
@@ -718,7 +840,7 @@ ALTER TABLE `transfer_gudang_detail`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -830,7 +952,7 @@ ALTER TABLE `transfer_gudang_detail`
 -- Constraints for table `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`id_gudang`) REFERENCES `gudang` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`id_gudang`) REFERENCES `gudang` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
