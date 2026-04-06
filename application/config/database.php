@@ -96,10 +96,10 @@ $query_builder = TRUE;
 // );
 $db['default'] = array(
 	'dsn' => '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'easy_wms_test',
+	'hostname' => '127.0.0.1',
+	'username' => 'u119898947_wms',
+	'password' => 'Melvin@1432',
+	'database' => 'u119898947_lixicon_wms',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
