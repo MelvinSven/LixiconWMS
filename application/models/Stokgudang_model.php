@@ -23,7 +23,7 @@ class Stokgudang_model extends MY_Model
                 'gudang.nama AS nama_gudang',
                 'supplier.nama AS nama_supplier'
             ])
-            ->join('barang', 'stok_gudang.id_barang = barang.id', 'left')
+            ->join('barang', 'stok_gudang.id_barang = barang.id')
             ->join('satuan', 'barang.id_satuan = satuan.id', 'left')
             ->join('gudang', 'stok_gudang.id_gudang = gudang.id', 'left')
             ->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left')

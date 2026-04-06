@@ -591,6 +591,9 @@ class Items extends MY_Controller
             }
         }
 
+        // 🚀 Hapus stok gudang terkait
+        $this->db->where('id_barang', $id)->delete('stok_gudang');
+
         // 🚀 Hapus data dari database
         $deleted = $this->db->where('id', $id)->delete('barang');
 
