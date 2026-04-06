@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // $config['base_url'] = 'http://localhost:8000/';
 // $config['base_url'] = 'https://joye-offendable-barometrically.ngrok-free.dev';
-$config['base_url'] = 'https://lixicon.com/wms/';
+$config['base_url'] = 'https://wms.lixicon.co.id/';
 
 
 /*
