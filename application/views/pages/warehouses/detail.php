@@ -59,6 +59,7 @@
     </div>
 
     <!-- Tombol Tambah Barang ke Gudang -->
+    <?php if ($can_modify): ?>
     <div class="row mb-3">
         <div class="col-lg-12">
             <button class="btn btn-success" data-toggle="modal" data-target="#tambahBarangModal">
@@ -66,6 +67,7 @@
             </button>
         </div>
     </div>
+    <?php endif ?>
 
     <!-- List Stok Barang -->
     <div class="row">
@@ -97,7 +99,9 @@
                                         <!-- <th class="text-right">Harga</th> -->
                                         <!-- <th class="text-right">Nilai</th> -->
                                         <th class="text-center">Status</th>
+                                        <?php if ($can_modify): ?>
                                         <th class="text-center">Aksi</th>
+                                        <?php endif ?>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,6 +132,7 @@
                                             <td class="text-center">
                                                 <span class="badge badge-<?= $badge ?>"><?= $status ?></span>
                                             </td>
+                                            <?php if ($can_modify): ?>
                                             <td class="text-center">
                                                 <button class="btn btn-success btn-sm rounded-lg" data-toggle="modal"
                                                     data-target="#barangMasukModal<?= $stock->id_barang ?>">
@@ -138,6 +143,7 @@
                                                     <i class="fas fa-arrow-up"></i> Keluar
                                                 </button>
                                             </td>
+                                            <?php endif ?>
                                         </tr>
                                     <?php endforeach ?>
                                 </tbody>
@@ -145,7 +151,7 @@
                                     <tr>
                                         <th colspan="4" class="text-right">Total:</th>
                                         <th class="text-center"><?= number_format($total_qty) ?></th>
-                                        <th colspan="3"></th>
+                                        <th colspan="<?= $can_modify ? 3 : 2 ?>"></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -162,6 +168,7 @@
     </div>
 </div>
 
+<?php if ($can_modify): ?>
 <!-- Modal Tambah Barang Masuk (Barang baru ke gudang ini) -->
 <div class="modal fade" id="tambahBarangModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -293,3 +300,4 @@
         </div>
     </div>
 <?php endforeach ?>
+<?php endif ?>

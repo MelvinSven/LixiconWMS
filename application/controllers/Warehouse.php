@@ -236,6 +236,10 @@ class Warehouse extends MY_Controller
         $data['total_jenis'] = count($data['stocks']);
         $data['total_qty'] = array_sum(array_column($data['stocks'], 'qty'));
 
+        // Determine if current user can modify this warehouse's stock
+        $user_gudang = getUserGudangId();
+        $data['can_modify'] = ($user_gudang === null) || ((int)$user_gudang === (int)$id);
+
         $this->view($data);
     }
 }
