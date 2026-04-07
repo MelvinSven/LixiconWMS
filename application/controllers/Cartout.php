@@ -76,6 +76,14 @@ class Cartout extends MY_Controller
 
         $input = (object) $this->input->post(null, true);
 
+        // Cek akses gudang untuk staff
+        $user_gudang = getUserGudangId();
+        if ($user_gudang !== null && $user_gudang != $input->id_gudang) {
+            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke gudang ini.');
+            redirect($redirect_to);
+            return;
+        }
+
         // Cek stok di gudang yang dipilih
         $stok_gudang = getStokGudang($input->id_gudang, $input->id_barang);
         if ($stok_gudang < $input->qty_keluar) {

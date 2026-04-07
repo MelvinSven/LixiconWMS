@@ -76,6 +76,14 @@ class Cartin extends MY_Controller
 
         $input = (object) $this->input->post(null, true);
 
+        // Cek akses gudang untuk staff
+        $user_gudang = getUserGudangId();
+        if ($user_gudang !== null && $user_gudang != $input->id_gudang) {
+            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke gudang ini.');
+            redirect($redirect_to);
+            return;
+        }
+
         // Mengambil data barang yang dipilih
         $this->cartin->table = 'barang';
         $barang = $this->cartin->where('id', $input->id_barang)->first();

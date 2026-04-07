@@ -215,6 +215,9 @@ class Items extends MY_Controller
         $data['breadcrumb_path'] = 'Pendataan Barang / Gudang / ' . $gudang->nama;
         $data['selected_gudang'] = $gudang;
 
+        $user_gudang = getUserGudangId();
+        $data['is_own_warehouse'] = ($user_gudang === null || $user_gudang == $id_gudang);
+
         // Ambil stok barang di gudang ini
         $data['content'] = $this->db->select([
             'barang.id AS id_barang',

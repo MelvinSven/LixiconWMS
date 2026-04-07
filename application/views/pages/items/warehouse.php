@@ -111,6 +111,7 @@
                                         </p>
                                     <?php endif ?>
 
+                                    <?php if ($is_own_warehouse): ?>
                                     <div class="row mt-3">
                                         <div class="col-md-6">
                                             <!-- Tombol trigger modal barang masuk -->
@@ -125,6 +126,7 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- Kolom kanan: gambar -->
@@ -139,6 +141,7 @@
                     </div>
                 </div>
 
+                <?php if ($is_own_warehouse): ?>
                 <!-- Modal Barang Masuk ke Gudang Ini -->
                 <div class="modal fade" id="barangMasukModal<?= $row->id_barang ?>" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
@@ -213,6 +216,7 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
 
             <?php endforeach; ?>
         <?php endif ?>

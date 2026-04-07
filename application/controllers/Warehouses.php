@@ -31,16 +31,7 @@ class Warehouses extends MY_Controller
         $data['breadcrumb_path'] = 'Manajemen Gudang / List Gudang';
         $data['page'] = 'pages/warehouses/index';
 
-        // Filter by user's warehouse if restricted
-        $user_gudang = getUserGudangId();
-        if ($user_gudang) {
-            $this->warehouses->where('id', $user_gudang);
-        }
         $data['content'] = $this->warehouses->paginate($page)->get();
-
-        if ($user_gudang) {
-            $this->warehouses->where('id', $user_gudang);
-        }
         $data['total_rows'] = $this->warehouses->count();
         $data['pagination'] = $this->warehouses->makePagination(base_url('warehouses'), 2, $data['total_rows']);
         $data['start'] = $this->warehouses->calculateRealOffset($page);
