@@ -48,7 +48,6 @@
                             <tr>
                                 <th>Barang</th>
                                 <th class="text-center">Satuan</th>
-                                <th class="text-center">Supplier</th>
                                 <th class="text-center">Tujuan Gudang</th>
                                 <th class="text-center">Jumlah</th>
                             </tr>
@@ -61,9 +60,6 @@
                                     </td>
                                     <td class="text-center">
                                         <small><?= ucfirst(getUnitName($barang->id_satuan)) ?></small>
-                                    </td>
-                                    <td class="text-center">
-                                        <small><?= ucfirst(getSupplierName($barang->id_supplier)) ?></small>
                                     </td>
                                     <td class="text-center">
                                         <span class="badge badge-info">

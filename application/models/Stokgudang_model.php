@@ -16,17 +16,14 @@ class Stokgudang_model extends MY_Model
                 'stok_gudang.qty',
                 'stok_gudang.stok_minimum',
                 'barang.id AS id_barang',
-                'barang.kode_barang',
                 'barang.nama AS nama_barang',
                 'barang.image',
                 'satuan.nama AS nama_satuan',
-                'gudang.nama AS nama_gudang',
-                'supplier.nama AS nama_supplier'
+                'gudang.nama AS nama_gudang'
             ])
             ->join('barang', 'stok_gudang.id_barang = barang.id')
             ->join('satuan', 'barang.id_satuan = satuan.id', 'left')
             ->join('gudang', 'stok_gudang.id_gudang = gudang.id', 'left')
-            ->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left')
             ->where('stok_gudang.id_gudang', $id_gudang)
             ->get('stok_gudang')
             ->result();

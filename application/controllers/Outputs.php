@@ -218,7 +218,6 @@ class Outputs extends MY_Controller
         $data['list_barang'] = $this->outputs->select([
             'barang_keluar_detail.qty',
             'barang.id_satuan',
-            'barang.id_supplier',
             'barang.nama',
         ])
             ->join('barang')

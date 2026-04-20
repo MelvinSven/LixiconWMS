@@ -129,6 +129,34 @@
                             </div>
                             <div class="form-group">
                                 <div class="row">
+                                    <label class="col-lg-2">Role</label>
+                                    <div class="col-lg-10">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <label class="input-group-text" for="role-options"><i
+                                                                class="fas fa-user-tag"></i></label>
+                                                    </div>
+                                                    <?php $selectedRole = isset($input->role) && $input->role ? $input->role : 'staff'; ?>
+                                                    <select class="form-control" name="role" id="role-options" required>
+                                                        <option value="staff" <?= $selectedRole == 'staff' ? 'selected' : '' ?>>Staff (Project Admin)</option>
+                                                        <option value="purchasing_admin" <?= $selectedRole == 'purchasing_admin' ? 'selected' : '' ?>>Purchasing Admin</option>
+                                                        <option value="admin" <?= $selectedRole == 'admin' ? 'selected' : '' ?>>Admin (Super Admin)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-1">
+                                            <div class="col-md-12">
+                                                <?= form_error('role') ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
                                     <label class="col-lg-2">Gudang</label>
                                     <div class="col-lg-10">
                                         <div class="row">

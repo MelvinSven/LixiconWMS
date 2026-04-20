@@ -121,26 +121,33 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
+                                            <?php
+                                            $idxRole = $this->session->userdata('role');
+                                            $idxUserGudang = $this->session->userdata('id_gudang');
+                                            $idxUserId = $this->session->userdata('id_user');
+                                            $rowIsSourceAdmin = ($idxRole == 'admin') || ($idxRole == 'staff' && $idxUserGudang == $p->id_gudang_asal);
+                                            $rowCanDelete = ($idxRole == 'admin') || ($p->id_user == $idxUserId && $p->status == 'menunggu');
+                                            ?>
                                             <div class="d-flex flex-row gap-1 justify-content-center align-items-center"
                                                 style="gap: 0.5rem;">
                                                 <a href="<?= base_url('preorder/detail/' . $p->id) ?>"
                                                     class="btn btn-info btn-sm rounded-lg" title="Detail">
                                                     <i data-feather="eye" class="feather-sm"></i>
                                                 </a>
-                                                <?php if ($this->session->userdata('role') == 'admin'): ?>
-                                                    <?php if ($p->status == 'menunggu'): ?>
-                                                        <form action="<?= base_url('preorder/approve/' . $p->id) ?>" method="POST"
-                                                            style="display:inline;">
-                                                            <button type="submit" class="btn btn-success btn-sm rounded-lg"
-                                                                onclick="return confirm('Setujui permintaan ini?')" title="Setujui">
-                                                                <i class="fas fa-check"></i>
-                                                            </button>
-                                                        </form>
-                                                        <button type="button" class="btn btn-danger btn-sm rounded-lg"
-                                                            data-toggle="modal" data-target="#rejectModal<?= $p->id ?>" title="Tolak">
-                                                            <i class="fas fa-times"></i>
+                                                <?php if ($rowIsSourceAdmin && $p->status == 'menunggu'): ?>
+                                                    <form action="<?= base_url('preorder/approve/' . $p->id) ?>" method="POST"
+                                                        style="display:inline;">
+                                                        <button type="submit" class="btn btn-success btn-sm rounded-lg"
+                                                            onclick="return confirm('Setujui permintaan ini?')" title="Setujui">
+                                                            <i class="fas fa-check"></i>
                                                         </button>
-                                                    <?php endif; ?>
+                                                    </form>
+                                                    <button type="button" class="btn btn-danger btn-sm rounded-lg"
+                                                        data-toggle="modal" data-target="#rejectModal<?= $p->id ?>" title="Tolak">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                <?php endif; ?>
+                                                <?php if ($rowCanDelete): ?>
                                                     <button type="button" class="btn btn-danger btn-sm rounded-lg"
                                                         data-toggle="modal" data-target="#deleteModal<?= $p->id ?>" title="Hapus">
                                                         <i data-feather="trash-2" class="feather-sm"></i>
@@ -151,7 +158,7 @@
                                     </tr>
 
                                     <!-- Modal Reject -->
-                                    <?php if ($this->session->userdata('role') == 'admin' && $p->status == 'menunggu'): ?>
+                                    <?php if ($rowIsSourceAdmin && $p->status == 'menunggu'): ?>
                                         <div class="modal fade" id="rejectModal<?= $p->id ?>" tabindex="-1" role="dialog">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
@@ -184,7 +191,7 @@
                                     <?php endif; ?>
 
                                     <!-- Modal Delete -->
-                                    <?php if ($this->session->userdata('role') == 'admin'): ?>
+                                    <?php if ($rowCanDelete): ?>
                                         <div class="modal fade" id="deleteModal<?= $p->id ?>" tabindex="-1" role="dialog">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">

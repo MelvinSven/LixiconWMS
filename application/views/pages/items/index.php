@@ -17,27 +17,10 @@
                     <form action="<?= base_url('items/search') ?>" method="POST" class="mb-4">
                         <div class="row">
                             <div class="col-md-3 mb-2">
-                                <label><strong>Kode Barang</strong></label>
-                                <input type="text" name="kode_barang" class="form-control"
-                                    placeholder="Cari kode barang..."
-                                    value="<?= isset($search_params['kode_barang']) ? $search_params['kode_barang'] : '' ?>">
-                            </div>
-                            <div class="col-md-3 mb-2">
                                 <label><strong>Nama Barang</strong></label>
                                 <input type="text" name="nama_barang" class="form-control"
                                     placeholder="Cari nama barang..."
                                     value="<?= isset($search_params['nama_barang']) ? $search_params['nama_barang'] : '' ?>">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <label><strong>Supplier</strong></label>
-                                <select name="supplier" class="form-control">
-                                    <option value="">-- Semua Supplier --</option>
-                                    <?php foreach (getSuppliers() as $supplier): ?>
-                                        <option value="<?= $supplier->id_supplier ?>" <?= (isset($search_params['supplier']) && $search_params['supplier'] == $supplier->id_supplier) ? 'selected' : '' ?>>
-                                            <?= $supplier->nama ?>
-                                        </option>
-                                    <?php endforeach ?>
-                                </select>
                             </div>
                             <div class="col-md-3 mb-2">
                                 <label><strong>Letak Barang</strong></label>
@@ -50,8 +33,6 @@
                                     <?php endforeach ?>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-3 mb-2">
                                 <label><strong>Deskripsi</strong></label>
                                 <input type="text" name="deskripsi" class="form-control" placeholder="Cari deskripsi..."
@@ -67,6 +48,8 @@
                                 </div>
                             </div>
                         </div>
+
+
                     </form>
                     <!-- End Search Form -->
 
@@ -82,11 +65,8 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th width="10%">Kode Barang</th>
                                         <th width="15%">Nama Barang</th>
                                         <th width="15%">Deskripsi</th>
-                                        <th width="10%">Supplier</th>
-                                        <th width="10%">Letak Barang</th>
                                         <th width="8%" class="text-center">Kuantitas</th>
                                         <th width="7%" class="text-center">Satuan</th>
                                         <th width="8%" class="text-center">Status</th>
@@ -99,14 +79,8 @@
                                     foreach ($content as $row): ?>
                                         <tr>
                                             <td><?= $no++ ?></td>
-                                            <td><code><?= isset($row->kode_barang) && $row->kode_barang ? $row->kode_barang : '-' ?></code>
-                                            </td>
                                             <td><strong><?= $row->nama_barang ?></strong></td>
                                             <td><?= isset($row->deskripsi) && $row->deskripsi ? htmlspecialchars($row->deskripsi) : '<span class="text-muted">-</span>' ?>
-                                            </td>
-                                            <td><?= isset($row->nama_supplier) && $row->nama_supplier ? $row->nama_supplier : '<span class="text-muted">-</span>' ?>
-                                            </td>
-                                            <td><?= isset($row->nama_lokasi) && $row->nama_lokasi ? htmlspecialchars($row->nama_lokasi) : '<span class="text-muted">-</span>' ?>
                                             </td>
                                             <td class="text-center"><?= number_format($row->qty) ?></td>
                                             <td class="text-center"><?= ucfirst($row->nama_satuan) ?></td>
@@ -165,7 +139,6 @@
 <?php
 // Cache data untuk menghindari query berulang dalam loop
 $cachedUnits = getUnits();
-$cachedSuppliers = getSuppliers();
 $cachedLocations = getLocations();
 ?>
 <?php foreach ($content as $row): ?>
@@ -261,14 +234,6 @@ $cachedLocations = getLocations();
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Kode Barang</label>
-                                    <input type="text" name="kode_barang" class="form-control"
-                                        value="<?= isset($row->kode_barang) ? $row->kode_barang : '' ?>"
-                                        placeholder="Kode Barang">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label>Nama Barang</label>
                                     <input type="text" name="nama" class="form-control" value="<?= $row->nama_barang ?>"
                                         required>
@@ -291,19 +256,6 @@ $cachedLocations = getLocations();
                                 placeholder="Deskripsi barang (opsional)"><?= isset($row->deskripsi) ? htmlspecialchars($row->deskripsi) : '' ?></textarea>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Supplier</label>
-                                    <select name="id_supplier" class="form-control">
-                                        <option value="">-- Pilih Supplier (Opsional) --</option>
-                                        <?php foreach ($cachedSuppliers as $supplier): ?>
-                                            <option value="<?= $supplier->id_supplier ?>" <?= (isset($row->id_supplier) && $row->id_supplier == $supplier->id_supplier) ? 'selected' : '' ?>>
-                                                <?= $supplier->nama ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Letak Barang</label>

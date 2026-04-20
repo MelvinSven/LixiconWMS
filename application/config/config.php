@@ -24,8 +24,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-// $config['base_url'] = 'http://localhost:8000/';
-$config['base_url'] = 'https://wms.lixicon.co.id/';
+// Auto-detect base_url so CSRF cookies work across localhost, ngrok, and production.
+if (defined('STDIN')) {
+    // CLI (e.g. migrations run from the command line)
+    $config['base_url'] = 'http://localhost:8000/';
+} elseif (isset($_SERVER['HTTP_HOST'])) {
+    $proto = (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http'));
+    $config['base_url'] = $proto . '://' . $_SERVER['HTTP_HOST'] . '/';
+} else {
+    $config['base_url'] = 'http://localhost:8000/';
+}
+// $config['base_url'] = 'https://wms.lixicon.co.id/';
 
 
 /*

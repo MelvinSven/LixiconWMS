@@ -104,3 +104,15 @@ $route['preorder/delete/(:num)'] = 'preorder/delete/$1';
 $route['preorder/getStokByGudang/(:num)'] = 'preorder/getStokByGudang/$1';
 $route['preorder/print_verifikasi/(:num)'] = 'preorder/print_verifikasi/$1';
 
+// Routes untuk Purchase Request
+$route['purchaserequest'] = 'purchaserequest/index';
+$route['purchaserequest/create'] = 'purchaserequest/create';
+$route['purchaserequest/store'] = 'purchaserequest/store';
+$route['purchaserequest/detail/(:num)'] = 'purchaserequest/detail/$1';
+$route['purchaserequest/accept/(:num)'] = 'purchaserequest/accept/$1';
+$route['purchaserequest/reject/(:num)'] = 'purchaserequest/reject/$1';
+$route['purchaserequest/verifikasi/(:num)'] = 'purchaserequest/verifikasi/$1';
+$route['purchaserequest/store_verifikasi/(:num)'] = 'purchaserequest/store_verifikasi/$1';
+$route['purchaserequest/update_qty/(:num)'] = 'purchaserequest/update_qty/$1';
+$route['purchaserequest/delete/(:num)'] = 'purchaserequest/delete/$1';
+

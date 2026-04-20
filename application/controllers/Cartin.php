@@ -33,19 +33,16 @@ class Cartin extends MY_Controller
         $data['page'] = 'pages/cartin/index';
         $data['content'] = $this->db->select([
             'barang.id AS id_barang',
-            'barang.kode_barang',
             'barang.nama',
             'barang.id_satuan',
             'keranjang_masuk.id AS id',
             'keranjang_masuk.qty AS qty_barang_masuk',
             'keranjang_masuk.id_gudang',
-            'gudang.nama AS nama_gudang',
-            'supplier.nama AS nama_supplier'
+            'gudang.nama AS nama_gudang'
         ])
             ->from('keranjang_masuk')
             ->join('barang', 'keranjang_masuk.id_barang = barang.id', 'left')
             ->join('gudang', 'keranjang_masuk.id_gudang = gudang.id', 'left')
-            ->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left')
             ->where('keranjang_masuk.id_user', $this->id_user)
             ->get()
             ->result();

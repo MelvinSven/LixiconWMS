@@ -61,8 +61,7 @@
                         <thead>
                             <tr style="background-color: #f8d7da;">
                                 <th width="5%" class="text-center">No</th>
-                                <th width="13%">Kode Barang</th>
-                                <th width="25%">Nama Barang</th>
+                                <th width="30%">Nama Barang</th>
                                 <th width="8%" class="text-center">Satuan</th>
                                 <th width="9%" class="text-center">Qty Kirim</th>
                                 <th width="10%" class="text-center">Qty Diterima</th>
@@ -76,9 +75,6 @@
                                     <tr>
                                         <td class="text-center">
                                             <?= $no++ ?>
-                                        </td>
-                                        <td>
-                                            <?= $item->kode_barang ?? '-' ?>
                                         </td>
                                         <td>
                                             <?= $item->nama_barang ?? '-' ?>
@@ -111,8 +107,7 @@
                         <thead>
                             <tr style="background-color: #d4edda;">
                                 <th width="5%" class="text-center">No</th>
-                                <th width="13%">Kode Barang</th>
-                                <th width="25%">Nama Barang</th>
+                                <th width="30%">Nama Barang</th>
                                 <th width="8%" class="text-center">Satuan</th>
                                 <th width="9%" class="text-center">Qty Kirim</th>
                                 <th width="10%" class="text-center">Qty Diterima</th>
@@ -126,9 +121,6 @@
                                     <tr>
                                         <td class="text-center">
                                             <?= $no2++ ?>
-                                        </td>
-                                        <td>
-                                            <?= $item->kode_barang ?? '-' ?>
                                         </td>
                                         <td>
                                             <?= $item->nama_barang ?? '-' ?>

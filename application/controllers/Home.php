@@ -34,12 +34,8 @@ class Home extends MY_Controller
         $jumlah_staff = $this->db->count_all('user');
         $jumlah_barang = $this->db->where('qty !=', 0)->count_all_results('barang');
 
-        // Filter valid warehouse count
         $user_gudang = getUserGudangId();
-        if ($user_gudang) {
-            $this->db->where('id', $user_gudang);
-        }
-        $jumlah_gudang = $this->db->count_all_results('gudang');
+        $jumlah_gudang = $this->db->count_all('gudang');
 
         // Total stok
         $this->db->select_sum('qty');

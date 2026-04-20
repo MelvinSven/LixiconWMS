@@ -80,7 +80,6 @@ class Preorder_model extends MY_Model
     {
         return $this->db->select([
             'permintaan_barang_detail.*',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'satuan.nama AS nama_satuan'
         ])

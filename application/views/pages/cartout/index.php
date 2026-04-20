@@ -24,9 +24,7 @@
                             <table class="table table-responsive w-100 d-block d-md-table table-hover">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th>Kode Barang</th>
                                         <th>Nama Barang</th>
-                                        <th>Supplier</th>
                                         <th class="text-center">Gudang Asal</th>
                                         <th class="text-center">Jumlah</th>
                                         <th></th>
@@ -35,13 +33,9 @@
                                 <tbody>
                                     <?php foreach ($content as $row): ?>
                                         <tr>
-                                            <td><code><?= isset($row->kode_barang) && $row->kode_barang ? $row->kode_barang : '-' ?></code>
-                                            </td>
                                             <td>
                                                 <strong><?= $row->nama ?></strong><br>
                                                 <small class="text-muted"><?= ucfirst(getUnitName($row->id_satuan)) ?></small>
-                                            </td>
-                                            <td><?= isset($row->nama_supplier) && $row->nama_supplier ? $row->nama_supplier : '-' ?>
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge badge-warning">

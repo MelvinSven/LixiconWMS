@@ -47,6 +47,7 @@ class Login_model extends MY_Model
                 'telefon'   => $query->telefon,
                 'ktp'       => $query->ktp,
                 'role'      => $query->role,
+                'id_gudang' => $query->id_gudang,
                 'is_login'  => true
             ];
             

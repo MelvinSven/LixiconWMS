@@ -220,17 +220,10 @@ class Warehouse extends MY_Controller
         $data['stocks'] = $this->stokgudang->getStokByGudang($id);
 
         // Data semua barang untuk dropdown tambah barang
-        $data['all_items'] = $this->db->select('barang.id, barang.nama, satuan.nama AS nama_satuan, supplier.nama AS nama_supplier')
+        $data['all_items'] = $this->db->select('barang.id, barang.nama, satuan.nama AS nama_satuan')
             ->join('satuan', 'barang.id_satuan = satuan.id', 'left')
-            ->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left')
             ->get('barang')
             ->result();
-
-        // Hitung nama barang yang duplikat (untuk menampilkan supplier di dropdown)
-        $nama_count = array_count_values(array_column($data['all_items'], 'nama'));
-        $data['duplicate_names'] = array_filter($nama_count, function ($count) {
-            return $count > 1;
-        });
 
         // Statistik
         $data['total_jenis'] = count($data['stocks']);

@@ -33,19 +33,16 @@ class Cartout extends MY_Controller
         $data['page'] = 'pages/cartout/index';
         $data['content'] = $this->db->select([
             'barang.id AS id_barang',
-            'barang.kode_barang',
             'barang.nama',
             'barang.id_satuan',
             'keranjang_keluar.id AS id',
             'keranjang_keluar.qty AS qty_barang_keluar',
             'keranjang_keluar.id_gudang',
-            'gudang.nama AS nama_gudang',
-            'supplier.nama AS nama_supplier'
+            'gudang.nama AS nama_gudang'
         ])
             ->from('keranjang_keluar')
             ->join('barang', 'keranjang_keluar.id_barang = barang.id', 'left')
             ->join('gudang', 'keranjang_keluar.id_gudang = gudang.id', 'left')
-            ->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left')
             ->where('keranjang_keluar.id_user', $this->id_user)
             ->get()
             ->result();
@@ -113,9 +110,9 @@ class Cartout extends MY_Controller
 
             // Update data
             if (
-                $this->cartout->where('id', $cart->id)
+                $this->db->where('id', $cart->id)
                     ->where('id_user', $this->id_user)
-                    ->update($data)
+                    ->update('keranjang_keluar', $data)
             ) {
                 $this->session->set_flashdata('success', 'Kuantitas berhasil diubah dari gudang ' . getWarehouseName($input->id_gudang));
             } else {
@@ -336,6 +333,7 @@ class Cartout extends MY_Controller
                 $row['id_barang_keluar'] = $id_barang_keluar;
                 unset($row['id'], $row['id_user']);                 // Hapus kolom tidak penting
                 $this->db->insert('barang_keluar_detail', $row);    // Insert ke tabel barang_keluar_detail
+                // Stok dikurangi otomatis oleh trigger `kurangi_barang_gudang` pada tabel barang_keluar_detail
             }
 
             $this->db->delete('keranjang_keluar', ['id_user' => $this->id_user]);    // Hapus cart user sekarang

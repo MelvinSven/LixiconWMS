@@ -90,9 +90,7 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>No</th>
-                                        <th>Kode Barang</th>
                                         <th>Nama Barang</th>
-                                        <th>Supplier</th>
                                         <th>Satuan</th>
                                         <th class="text-center">Stok</th>
                                         <th class="text-center">Stok Min</th>
@@ -120,10 +118,7 @@
                                         ?>
                                         <tr>
                                             <td><?= $no++ ?></td>
-                                            <td><code><?= isset($stock->kode_barang) && $stock->kode_barang ? $stock->kode_barang : '-' ?></code>
-                                            </td>
                                             <td><?= $stock->nama_barang ?></td>
-                                            <td><?= $stock->nama_supplier ?? '-' ?></td>
                                             <td><?= $stock->nama_satuan ?></td>
                                             <td class="text-center"><strong><?= number_format($stock->qty) ?></strong></td>
                                             <td class="text-center"><?= number_format($stock->stok_minimum) ?></td>
@@ -149,7 +144,7 @@
                                 </tbody>
                                 <tfoot class="bg-light">
                                     <tr>
-                                        <th colspan="4" class="text-right">Total:</th>
+                                        <th colspan="3" class="text-right">Total:</th>
                                         <th class="text-center"><?= number_format($total_qty) ?></th>
                                         <th colspan="<?= $can_modify ? 3 : 2 ?>"></th>
                                     </tr>
@@ -191,14 +186,7 @@
                         <select name="id_barang" class="form-control" required>
                             <option value="">-- Pilih Barang --</option>
                             <?php foreach ($all_items as $item): ?>
-                                <?php
-                                $show_supplier = isset($duplicate_names[$item->nama]);
-                                $label = $item->nama . ' (' . $item->nama_satuan . ')';
-                                if ($show_supplier && !empty($item->nama_supplier)) {
-                                    $label .= ' - ' . $item->nama_supplier;
-                                }
-                                ?>
-                                <option value="<?= $item->id ?>"><?= $label ?></option>
+                                <option value="<?= $item->id ?>"><?= $item->nama . ' (' . $item->nama_satuan . ')' ?></option>
                             <?php endforeach ?>
                         </select>
                     </div>

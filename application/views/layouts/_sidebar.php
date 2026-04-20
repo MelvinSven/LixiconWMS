@@ -19,17 +19,19 @@
 
                 <li class="nav-small-cap"><span class="hide-menu">Manajemen Barang</span></li>
 
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('items/register') ?>" aria-expanded="false">
-                        <i data-feather="clipboard" class="feather-icon"></i>
-                        <span class="hide-menu">Register Barang</span>
-                    </a>
-                </li>
+                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="<?= base_url('items/register') ?>" aria-expanded="false">
+                            <i data-feather="clipboard" class="feather-icon"></i>
+                            <span class="hide-menu">Register Barang</span>
+                        </a>
+                    </li>
+                <?php endif ?>
 
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="<?= base_url('items') ?>" aria-expanded="false">
                         <i data-feather="package" class="feather-icon"></i>
-                        <span class="hide-menu">List Barang</span>
+                        <span class="hide-menu">Daftar Barang</span>
                     </a>
                 </li>
                 <?php if ($this->session->userdata('role') == 'admin'): ?>
@@ -43,7 +45,7 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="<?= base_url('units') ?>" aria-expanded="false">
                         <i data-feather="layers" class="feather-icon"></i>
-                        <span class="hide-menu">List Satuan</span>
+                        <span class="hide-menu">Daftar Satuan</span>
                     </a>
                 </li>
 
@@ -64,14 +66,14 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="<?= base_url('locations') ?>" aria-expanded="false">
                         <i class="fas fa-map-marker-alt"></i>
-                        <span class="hide-menu">List Letak Barang</span>
+                        <span class="hide-menu">Daftar Letak Barang</span>
                     </a>
                 </li>
 
                 <li class="list-divider"></li>
 
                 <!-- Submenu Manajemen Supplier -->
-                <li class="nav-small-cap"><span class="hide-menu">Manajemen Supplier</span></li>
+                <!-- <li class="nav-small-cap"><span class="hide-menu">Manajemen Supplier</span></li> -->
                 <?php if ($this->session->userdata('role') == 'admin'): ?>
                     <!-- <li class="sidebar-item">
                         <a class="sidebar-link" href="<?= base_url('suppliers/add') ?>" aria-expanded="false">
@@ -80,16 +82,17 @@
                         </a>
                     </li> -->
                 <?php endif ?>
-                <li class="sidebar-item">
+                <!-- <li class="sidebar-item">
                     <a class="sidebar-link" href="<?= base_url('suppliers') ?>" aria-expanded="false">
                         <i data-feather="truck" class="feather-icon"></i>
                         <span class="hide-menu">List Supplier</span>
                     </a>
-                </li>
+                </li> -->
 
-                <li class="list-divider"></li>
+                <!-- <li class="list-divider"></li> -->
 
                 <!-- Submemu Manajemen Gudang -->
+
                 <li class="nav-small-cap"><span class="hide-menu">Manajemen Gudang</span></li>
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="<?= base_url('warehouses') ?>" aria-expanded="false">
@@ -97,76 +100,95 @@
                         <span class="hide-menu">Gudang</span>
                     </a>
                 </li>
-
+                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    <li class="list-divider"></li>
+                    <!-- Submemu Barang -->
+                    <li class="nav-small-cap"><span class="hide-menu">Barang Masuk</span></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="<?= base_url('cartin') ?>" aria-expanded="false">
+                            <i data-feather="log-in" class="feather-icon"></i>
+                            <span class="hide-menu">Barang Masuk</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link sidebar-link" href="<?= base_url('inputs') ?>" aria-expanded="false">
+                            <i data-feather="file-text" class="feather-icon"></i>
+                            <span class="hide-menu">Catatan Masuk</span>
+                        </a>
+                    </li>
+                <?php endif ?>
                 <li class="list-divider"></li>
-                <!-- Submemu Barang -->
-                <li class="nav-small-cap"><span class="hide-menu">Barang Masuk</span></li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('cartin') ?>" aria-expanded="false">
-                        <i data-feather="log-in" class="feather-icon"></i>
-                        <span class="hide-menu">Barang Masuk</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="<?= base_url('inputs') ?>" aria-expanded="false">
-                        <i data-feather="file-text" class="feather-icon"></i>
-                        <span class="hide-menu">Catatan Masuk</span>
-                    </a>
-                </li>
-
-                <li class="list-divider"></li>
-
-                <!-- Submemu Manajemen Inventory -->
-                <li class="nav-small-cap"><span class="hide-menu">Barang Keluar</span></li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="<?= base_url('cartout') ?>" aria-expanded="false">
-                        <i data-feather="log-out" class="feather-icon"></i>
-                        <span class="hide-menu">Barang Keluar</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="<?= base_url('outputs') ?>" aria-expanded="false">
-                        <i data-feather="file-text" class="feather-icon"></i>
-                        <span class="hide-menu">Catatan Keluar</span>
-                    </a>
-                </li>
-
-                <li class="list-divider"></li>
-
-                <!-- Submenu Transfer Barang -->
-                <li class="nav-small-cap"><span class="hide-menu">Pemindahan Barang</span></li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('transfer/create') ?>" aria-expanded="false">
-                        <i data-feather="repeat" class="feather-icon"></i>
-                        <span class="hide-menu">Pemindahan Barang</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="<?= base_url('transfer') ?>" aria-expanded="false">
-                        <i data-feather="list" class="feather-icon"></i>
-                        <span class="hide-menu">Riwayat Pemindahan</span>
-                    </a>
-                </li>
-
-                <li class="list-divider"></li>
+                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    <!-- Submemu Manajemen Inventory -->
+                    <li class="nav-small-cap"><span class="hide-menu">Barang Keluar</span></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link sidebar-link" href="<?= base_url('cartout') ?>" aria-expanded="false">
+                            <i data-feather="log-out" class="feather-icon"></i>
+                            <span class="hide-menu">Barang Keluar</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link sidebar-link" href="<?= base_url('outputs') ?>" aria-expanded="false">
+                            <i data-feather="file-text" class="feather-icon"></i>
+                            <span class="hide-menu">Catatan Keluar</span>
+                        </a>
+                    </li>
+                    <li class="list-divider"></li>
+                <?php endif ?>
+                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    <!-- Submenu Transfer Barang -->
+                    <li class="nav-small-cap"><span class="hide-menu">Pemindahan Barang</span></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="<?= base_url('transfer/create') ?>" aria-expanded="false">
+                            <i data-feather="repeat" class="feather-icon"></i>
+                            <span class="hide-menu">Pemindahan Barang</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link sidebar-link" href="<?= base_url('transfer') ?>" aria-expanded="false">
+                            <i data-feather="list" class="feather-icon"></i>
+                            <span class="hide-menu">Riwayat Pemindahan</span>
+                        </a>
+                    </li>
+                    <li class="list-divider"></li>
+                <?php endif ?>
 
                 <!-- Submenu Permintaan Barang -->
-                <li class="nav-small-cap"><span class="hide-menu">Permintaan Barang</span></li>
+                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    <li class="nav-small-cap"><span class="hide-menu">Permintaan Barang</span></li>
+                    <?php if ($this->session->userdata('role') == 'staff'): ?>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= base_url('preorder/create') ?>" aria-expanded="false">
+                                <i data-feather="plus-circle" class="feather-icon"></i>
+                                <span class="hide-menu">Buat Permintaan</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="<?= base_url('preorder') ?>" aria-expanded="false">
+                            <i data-feather="clipboard" class="feather-icon"></i>
+                            <span class="hide-menu">Daftar Permintaan</span>
+                        </a>
+                    </li>
+                    <li class="list-divider"></li>
+                <?php endif ?>
+
+                <!-- Submenu Purchasing -->
+                <li class="nav-small-cap"><span class="hide-menu">Purchasing</span></li>
                 <?php if ($this->session->userdata('role') == 'staff'): ?>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="<?= base_url('preorder/create') ?>" aria-expanded="false">
+                        <a class="sidebar-link" href="<?= base_url('purchaserequest/create') ?>" aria-expanded="false">
                             <i data-feather="plus-circle" class="feather-icon"></i>
-                            <span class="hide-menu">Buat Permintaan</span>
+                            <span class="hide-menu">Buat Purchase Request</span>
                         </a>
                     </li>
                 <?php endif; ?>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('preorder') ?>" aria-expanded="false">
-                        <i data-feather="clipboard" class="feather-icon"></i>
-                        <span class="hide-menu">Daftar Permintaan</span>
+                    <a class="sidebar-link" href="<?= base_url('purchaserequest') ?>" aria-expanded="false">
+                        <i data-feather="file-text" class="feather-icon"></i>
+                        <span class="hide-menu">Purchase Requests</span>
                     </a>
                 </li>
-
                 <li class="list-divider"></li>
 
                 <!-- Submemu Manajemen Karyawan -->

@@ -209,7 +209,6 @@ class Inputs extends MY_Controller
             'barang_masuk_detail.qty',
             'barang_masuk_detail.id_gudang',
             'barang.id_satuan',
-            'barang.id_supplier',
             'barang.nama',
             'gudang.nama AS nama_gudang',
         ])

@@ -208,14 +208,6 @@ class Suppliers extends MY_Controller
             return;
         }
 
-        // Cek apakah supplier masih digunakan oleh barang
-        $barang_count = $this->db->where('id_supplier', $id)->count_all_results('barang');
-        if ($barang_count > 0) {
-            $this->session->set_flashdata('error', 'Supplier tidak dapat dihapus karena masih digunakan oleh ' . $barang_count . ' barang');
-            redirect(base_url('suppliers'));
-            return;
-        }
-
         // Hapus data supplier
         if ($this->db->where('id_supplier', $id)->delete('supplier')) {
             $this->session->set_flashdata('success', 'Supplier berhasil dihapus');

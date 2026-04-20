@@ -10,21 +10,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Kode Barang <span class="text-danger">*</span></label>
-                            <input type="text" name="kode_barang" class="form-control"
-                                placeholder="Masukkan kode barang" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
                             <label>Nama Barang <span class="text-danger">*</span></label>
                             <input type="text" name="nama" class="form-control" placeholder="Masukkan nama barang"
                                 required>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Kuantitas Awal <span class="text-danger">*</span></label>
@@ -32,6 +22,9 @@
                                 required>
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Satuan <span class="text-danger">*</span></label>
@@ -51,9 +44,6 @@
                                     href="<?= base_url('unit') ?>">Tambah Satuan</a></small>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Gudang Awal <span class="text-danger">*</span></label>
@@ -74,25 +64,6 @@
                                     Gudang</a></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Supplier</label>
-                            <select name="id_supplier" class="form-control">
-                                <option value="">-- Pilih Supplier (Opsional) --</option>
-                                <?php
-                                $suppliers = getSuppliers();
-                                if (!empty($suppliers)):
-                                    foreach ($suppliers as $supplier): ?>
-                                        <option value="<?= $supplier->id_supplier ?>"><?= $supplier->nama ?></option>
-                                    <?php endforeach;
-                                else: ?>
-                                    <option value="" disabled>Belum ada data supplier</option>
-                                <?php endif; ?>
-                            </select>
-                            <small class="text-muted">Jika supplier belum ada, tambahkan di menu <a
-                                    href="<?= base_url('suppliers') ?>">List Supplier</a></small>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row">
@@ -105,7 +76,8 @@
                                 $locations = getLocations();
                                 if (!empty($locations)):
                                     foreach ($locations as $lokasi): ?>
-                                        <option value="<?= $lokasi->id_lokasi ?>"><?= htmlspecialchars($lokasi->nama_lokasi) ?>
+                                        <option value="<?= $lokasi->id_lokasi ?>">
+                                            <?= htmlspecialchars($lokasi->nama_lokasi) ?>
                                         </option>
                                     <?php endforeach;
                                 else: ?>
@@ -130,8 +102,6 @@
                     <input type="file" name="image" class="form-control-file" accept="image/jpeg,image/png,image/jpg">
                     <small class="text-muted">Format: JPG, JPEG, PNG. Maksimal 2MB. (Opsional)</small>
                 </div>
-
-                <hr>
 
                 <div class="form-group text-right">
                     <a href="<?= base_url('items') ?>" class="btn btn-secondary">

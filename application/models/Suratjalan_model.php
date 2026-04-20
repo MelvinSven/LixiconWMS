@@ -49,7 +49,6 @@ class Suratjalan_model extends MY_Model
     {
         return $this->db->select([
             'surat_jalan_detail.*',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'satuan.nama AS nama_satuan'
         ])
@@ -82,7 +81,6 @@ class Suratjalan_model extends MY_Model
     {
         return $this->db->select([
             'surat_jalan_detail.*',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'satuan.nama AS nama_satuan'
         ])

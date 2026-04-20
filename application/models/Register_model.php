@@ -14,7 +14,8 @@ class Register_model extends MY_Model
             'password' => '',
             'telefon' => '',
             'ktp' => '',
-            'id_gudang' => ''
+            'id_gudang' => '',
+            'role' => 'staff'
         ];
     }
 
@@ -63,6 +64,15 @@ class Register_model extends MY_Model
                     'is_unique' => '<h6>%s sudah digunakan.</h6>'
                 ]
             ],
+            [
+                'field' => 'role',
+                'label' => 'Role',
+                'rules' => 'trim|required|in_list[admin,staff,purchasing_admin]',
+                'errors' => [
+                    'required' => '<h6>%s harus dipilih.</h6>',
+                    'in_list'  => '<h6>%s tidak valid.</h6>'
+                ]
+            ],
         ];
 
         return $validationRules;
@@ -73,13 +83,18 @@ class Register_model extends MY_Model
      */
     public function run($input)
     {
+        $allowedRoles = ['admin', 'staff', 'purchasing_admin'];
+        $role = isset($input->role) && in_array($input->role, $allowedRoles, true)
+            ? $input->role
+            : 'staff';
+
         $data = [
             'nama' => $input->nama,
             'email' => strtolower($input->email),
             'password' => hashEncrypt($input->password),
             'telefon' => $input->telefon,
             'ktp' => $input->ktp,
-            'role' => 'staff',
+            'role' => $role,
             'id_gudang' => !empty($input->id_gudang) ? $input->id_gudang : null
         ];
 

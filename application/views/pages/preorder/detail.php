@@ -146,8 +146,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="8%">No</th>
-                                        <th width="15%">Kode Barang</th>
-                                        <th width="30%">Nama Barang</th>
+                                        <th width="40%">Nama Barang</th>
                                         <th width="12%">Satuan</th>
                                         <th width="12%">Qty</th>
                                         <th width="23%">Keterangan</th>
@@ -164,9 +163,6 @@
                                             <tr>
                                                 <td>
                                                     <?= $no++ ?>
-                                                </td>
-                                                <td>
-                                                    <?= $item->kode_barang ?? '-' ?>
                                                 </td>
                                                 <td>
                                                     <?= $item->nama_barang ?? '-' ?>
@@ -318,8 +314,7 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th width="5%">No</th>
-                                            <th width="12%">Kode Barang</th>
-                                            <th width="20%">Nama Barang</th>
+                                            <th width="28%">Nama Barang</th>
                                             <th width="8%">Satuan</th>
                                             <th width="8%" class="text-center">Qty Kirim</th>
                                             <th width="10%" class="text-center">Qty Diterima</th>
@@ -332,7 +327,6 @@
                                         foreach ($verifikasi_details as $vd): ?>
                                             <tr class="<?= $vd->is_sesuai == 0 ? 'table-danger' : '' ?>">
                                                 <td><?= $no++ ?></td>
-                                                <td><?= $vd->kode_barang ?? '-' ?></td>
                                                 <td><?= $vd->nama_barang ?? '-' ?></td>
                                                 <td><?= $vd->nama_satuan ?? '-' ?></td>
                                                 <td class="text-center"><strong><?= number_format($vd->qty) ?></strong></td>
@@ -373,8 +367,19 @@
                 <?php endif; ?>
 
                 <!-- Action Buttons -->
+                <?php
+                $detailRole = $this->session->userdata('role');
+                $detailUserGudang = $this->session->userdata('id_gudang');
+                $detailUserId = $this->session->userdata('id_user');
+                // Source warehouse admin: can approve/reject/surat_jalan/kirim
+                $isSourceAdmin = ($detailRole == 'admin') || ($detailRole == 'staff' && $detailUserGudang == $permintaan->id_gudang_asal);
+                // Destination warehouse admin: can verifikasi
+                $isDestAdmin = ($detailRole == 'admin') || ($detailRole == 'staff' && $detailUserGudang == $permintaan->id_gudang_tujuan);
+                // Requester who can delete their own pending preorder
+                $isRequesterPreApproval = ($permintaan->id_user == $detailUserId && $permintaan->status == 'menunggu');
+                ?>
                 <div class="mt-4 d-flex flex-wrap" style="gap: 0.5rem;">
-                    <?php if ($this->session->userdata('role') == 'admin' && $permintaan->status == 'menunggu'): ?>
+                    <?php if ($isSourceAdmin && $permintaan->status == 'menunggu'): ?>
                         <form action="<?= base_url('preorder/approve/' . $permintaan->id) ?>" method="POST"
                             style="display:inline;">
                             <button type="submit" class="btn btn-success"
@@ -387,13 +392,13 @@
                         </button>
                     <?php endif; ?>
 
-                    <?php if ($this->session->userdata('role') == 'staff' && $permintaan->status == 'disetujui'): ?>
+                    <?php if ($isSourceAdmin && $permintaan->status == 'disetujui'): ?>
                         <a href="<?= base_url('preorder/surat_jalan/' . $permintaan->id) ?>" class="btn btn-primary">
                             <i class="fas fa-file-alt mr-1"></i> Buat Surat Jalan
                         </a>
                     <?php endif; ?>
 
-                    <?php if ($this->session->userdata('role') == 'admin' && $permintaan->status == 'surat_jalan'): ?>
+                    <?php if ($isSourceAdmin && $permintaan->status == 'surat_jalan'): ?>
                         <form action="<?= base_url('preorder/kirim/' . $permintaan->id) ?>" method="POST"
                             style="display:inline;">
                             <button type="submit" class="btn btn-warning"
@@ -403,7 +408,7 @@
                         </form>
                     <?php endif; ?>
 
-                    <?php if ($this->session->userdata('role') == 'staff' && $permintaan->status == 'dikirim'): ?>
+                    <?php if ($isDestAdmin && $permintaan->status == 'dikirim'): ?>
                         <a href="<?= base_url('preorder/verifikasi/' . $permintaan->id) ?>" class="btn btn-info">
                             <i class="fas fa-clipboard-check mr-1"></i> Verifikasi Penerimaan
                         </a>
@@ -415,7 +420,7 @@
 </div>
 
 <!-- Modal Reject -->
-<?php if ($this->session->userdata('role') == 'admin' && $permintaan->status == 'menunggu'): ?>
+<?php if ($isSourceAdmin && $permintaan->status == 'menunggu'): ?>
     <div class="modal fade" id="rejectModalDetail" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

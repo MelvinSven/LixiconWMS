@@ -37,20 +37,16 @@ class Items extends MY_Controller
         // Query dengan raw DB untuk handle LEFT JOIN supplier dengan benar
         $this->db->select([
             'barang.id AS id_barang',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            'barang.qty',
+            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
             'barang.image',
-            'barang.id_supplier',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
-            'supplier.nama AS nama_supplier',
             'lokasi_barang.nama_lokasi'
         ]);
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-        $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
         $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
         $data['content'] = $this->db->get()->result();
@@ -83,20 +79,16 @@ class Items extends MY_Controller
         // Query dengan raw DB untuk handle LEFT JOIN supplier dengan benar
         $this->db->select([
             'barang.id AS id_barang',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            'barang.qty',
+            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
             'barang.image',
-            'barang.id_supplier',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
-            'supplier.nama AS nama_supplier',
             'lokasi_barang.nama_lokasi'
         ]);
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-        $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
         $this->db->where('barang.id_satuan', $id_unit);
         $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
@@ -135,20 +127,16 @@ class Items extends MY_Controller
 
             $this->db->select([
                 'barang.id AS id_barang',
-                'barang.kode_barang',
                 'barang.nama AS nama_barang',
                 'barang.deskripsi',
-                'barang.qty',
+                '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
                 'barang.image',
-                'barang.id_supplier',
                 'barang.id_lokasi',
                 'satuan.nama AS nama_satuan',
-                'supplier.nama AS nama_supplier',
                 'lokasi_barang.nama_lokasi'
             ]);
             $this->db->from('barang');
             $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-            $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
             $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
             $this->db->where('barang.qty >', 0);
             $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
@@ -159,20 +147,16 @@ class Items extends MY_Controller
 
             $this->db->select([
                 'barang.id AS id_barang',
-                'barang.kode_barang',
                 'barang.nama AS nama_barang',
                 'barang.deskripsi',
-                'barang.qty',
+                '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
                 'barang.image',
-                'barang.id_supplier',
                 'barang.id_lokasi',
                 'satuan.nama AS nama_satuan',
-                'supplier.nama AS nama_supplier',
                 'lokasi_barang.nama_lokasi'
             ]);
             $this->db->from('barang');
             $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-            $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
             $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
             $this->db->where('barang.qty', 0);
             $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
@@ -257,9 +241,7 @@ class Items extends MY_Controller
         // Simpan parameter pencarian ke session jika ada POST
         if ($_POST) {
             $search_params = [
-                'kode_barang' => $this->input->post('kode_barang'),
                 'nama_barang' => $this->input->post('nama_barang'),
-                'supplier' => $this->input->post('supplier'),
                 'deskripsi' => $this->input->post('deskripsi'),
                 'lokasi' => $this->input->post('lokasi'),
                 'satuan' => $this->input->post('satuan'),
@@ -295,18 +277,11 @@ class Items extends MY_Controller
         // Build base query untuk count
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-        $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
 
         // Apply filters untuk count
-        if (!empty($search_params['kode_barang'])) {
-            $this->db->like('barang.kode_barang', $search_params['kode_barang']);
-        }
         if (!empty($search_params['nama_barang'])) {
             $this->db->like('barang.nama', $search_params['nama_barang']);
-        }
-        if (!empty($search_params['supplier'])) {
-            $this->db->where('barang.id_supplier', $search_params['supplier']);
         }
         if (!empty($search_params['deskripsi'])) {
             $this->db->like('barang.deskripsi', $search_params['deskripsi']);
@@ -334,31 +309,21 @@ class Items extends MY_Controller
         // Build query untuk data
         $this->db->select([
             'barang.id AS id_barang',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            'barang.qty',
+            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
             'barang.image',
-            'barang.id_supplier',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
-            'supplier.nama AS nama_supplier',
             'lokasi_barang.nama_lokasi'
         ]);
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-        $this->db->join('supplier', 'barang.id_supplier = supplier.id_supplier', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
 
         // Apply filters lagi untuk data
-        if (!empty($search_params['kode_barang'])) {
-            $this->db->like('barang.kode_barang', $search_params['kode_barang']);
-        }
         if (!empty($search_params['nama_barang'])) {
             $this->db->like('barang.nama', $search_params['nama_barang']);
-        }
-        if (!empty($search_params['supplier'])) {
-            $this->db->where('barang.id_supplier', $search_params['supplier']);
         }
         if (!empty($search_params['deskripsi'])) {
             $this->db->like('barang.deskripsi', $search_params['deskripsi']);
@@ -427,21 +392,13 @@ class Items extends MY_Controller
         // Ambil data dari form
         $qty = $this->input->post('qty');
         $id_gudang = $this->input->post('id_gudang');
-        $id_supplier = $this->input->post('id_supplier');
         $nama = $this->input->post('nama');
-        $kode_barang = $this->input->post('kode_barang');
 
-        // Validasi duplikasi: cek apakah barang dengan nama dan supplier yang sama sudah ada
-        $this->db->where('nama', $nama);
-        if (!empty($id_supplier)) {
-            $this->db->where('id_supplier', $id_supplier);
-        } else {
-            $this->db->where('id_supplier IS NULL', null, false);
-        }
-        $existing = $this->db->get('barang')->row();
+        // Validasi duplikasi: cek apakah barang dengan nama yang sama sudah ada
+        $existing = $this->db->where('nama', $nama)->get('barang')->row();
 
         if ($existing) {
-            $this->session->set_flashdata('error', 'Barang dengan nama "' . $nama . '" dan supplier yang sama sudah terdaftar.');
+            $this->session->set_flashdata('error', 'Barang dengan nama "' . $nama . '" sudah terdaftar.');
             redirect(base_url('items/register'));
             return;
         }
@@ -449,12 +406,10 @@ class Items extends MY_Controller
         // Simpan ke database barang
         $id_lokasi = $this->input->post('id_lokasi');
         $data = [
-            'kode_barang' => $kode_barang,
             'nama' => $nama,
             'deskripsi' => $this->input->post('deskripsi'),
             'qty' => $qty,
             'id_satuan' => $this->input->post('id_satuan'),
-            'id_supplier' => !empty($id_supplier) ? $id_supplier : null,
             'id_lokasi' => !empty($id_lokasi) ? $id_lokasi : null,
             'image' => $imagePath // Simpan path ke DB
         ];
@@ -535,32 +490,22 @@ class Items extends MY_Controller
         }
 
         // Update data ke database
-        $id_supplier = $this->input->post('id_supplier', true);
         $id_lokasi = $this->input->post('id_lokasi', true);
         $nama = $this->input->post('nama', true);
 
-        // Validasi duplikasi: cek apakah barang dengan nama dan supplier yang sama sudah ada (selain barang ini sendiri)
-        $this->db->where('nama', $nama);
-        $this->db->where('id !=', $id);
-        if (!empty($id_supplier)) {
-            $this->db->where('id_supplier', $id_supplier);
-        } else {
-            $this->db->where('id_supplier IS NULL', null, false);
-        }
-        $existing = $this->db->get('barang')->row();
+        // Validasi duplikasi: cek apakah barang dengan nama yang sama sudah ada (selain barang ini sendiri)
+        $existing = $this->db->where('nama', $nama)->where('id !=', $id)->get('barang')->row();
 
         if ($existing) {
-            $this->session->set_flashdata('error', 'Barang dengan nama "' . $nama . '" dan supplier yang sama sudah terdaftar.');
+            $this->session->set_flashdata('error', 'Barang dengan nama "' . $nama . '" sudah terdaftar.');
             redirect('items');
             return;
         }
 
         $data = [
-            'kode_barang' => $this->input->post('kode_barang', true),
             'nama' => $nama,
             'deskripsi' => $this->input->post('deskripsi', true),
             'id_satuan' => $this->input->post('id_satuan', true),
-            'id_supplier' => !empty($id_supplier) ? $id_supplier : null,
             'id_lokasi' => !empty($id_lokasi) ? $id_lokasi : null,
             'image' => $image_name
         ];

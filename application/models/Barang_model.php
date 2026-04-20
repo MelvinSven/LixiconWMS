@@ -7,12 +7,10 @@ class Barang_model extends MY_Model
     protected $perPage = 10;
 
     protected $fillable = [
-        'kode_barang',
         'nama',
         'deskripsi',
         'qty',
         'id_satuan',
-        'id_supplier',
         'id_lokasi',
         'harga',
         'image'

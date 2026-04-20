@@ -31,7 +31,6 @@ class EasyTest extends CI_Controller {
                     <th style="width:110px" align="center">Tanggal Masuk</th>
                     <th style="width:110px" align="center">Tanggal Keluar</th>
                     <th style="width:130px" align="center">Lokasi</th>
-                    <th style="width:140px" align="center">Kode Barang</th>
                     <th style="width:140px" align="center">Nama Barang</th>
                     <th style="width:80px" align="center">Satuan</th>
                     <th style="width:80px" align="center">Jumlah</th>

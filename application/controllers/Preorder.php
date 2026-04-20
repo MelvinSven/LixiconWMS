@@ -226,19 +226,19 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Approve permintaan (Admin only)
+     * Approve permintaan (target/source project admin or super-admin)
      */
     public function approve($id)
     {
-        if ($this->session->userdata('role') != 'admin') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses untuk menyetujui permintaan');
-            return redirect('preorder');
-        }
-
         $permintaan = $this->preorderModel->getPermintaanById($id);
         if (!$permintaan || $permintaan->status != 'menunggu') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid atau sudah diproses');
             return redirect('preorder');
+        }
+
+        if (!$this->canManageSourceWarehouse($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang sumber yang dapat menyetujui permintaan ini');
+            return redirect('preorder/detail/' . $id);
         }
 
         $this->preorderModel->updateStatus($id, 'disetujui');
@@ -247,19 +247,19 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Reject permintaan (Admin only)
+     * Reject permintaan (target/source project admin or super-admin)
      */
     public function reject($id)
     {
-        if ($this->session->userdata('role') != 'admin') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses untuk menolak permintaan');
-            return redirect('preorder');
-        }
-
         $permintaan = $this->preorderModel->getPermintaanById($id);
         if (!$permintaan || $permintaan->status != 'menunggu') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid atau sudah diproses');
             return redirect('preorder');
+        }
+
+        if (!$this->canManageSourceWarehouse($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang sumber yang dapat menolak permintaan ini');
+            return redirect('preorder/detail/' . $id);
         }
 
         $alasan = $this->input->post('alasan_tolak');
@@ -269,7 +269,7 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Halaman form buat surat jalan (Staff)
+     * Halaman form buat surat jalan (target/source project admin or super-admin)
      */
     public function surat_jalan($id)
     {
@@ -278,6 +278,11 @@ class Preorder extends MY_Controller
         if (!$permintaan || $permintaan->status != 'disetujui') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid atau belum disetujui');
             return redirect('preorder');
+        }
+
+        if (!$this->canManageSourceWarehouse($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang sumber yang dapat membuat surat jalan');
+            return redirect('preorder/detail/' . $id);
         }
 
         $data = [
@@ -302,6 +307,11 @@ class Preorder extends MY_Controller
         if (!$permintaan || $permintaan->status != 'disetujui') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid');
             return redirect('preorder');
+        }
+
+        if (!$this->canManageSourceWarehouse($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang sumber yang dapat membuat surat jalan');
+            return redirect('preorder/detail/' . $id);
         }
 
         $this->form_validation->set_rules('nomor_pengiriman', 'Nomor Pengiriman', 'required');
@@ -376,19 +386,19 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Tandai sedang dikirim (Admin only)
+     * Tandai sedang dikirim (target/source project admin or super-admin)
      */
     public function kirim($id)
     {
-        if ($this->session->userdata('role') != 'admin') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses');
-            return redirect('preorder');
-        }
-
         $permintaan = $this->preorderModel->getPermintaanById($id);
         if (!$permintaan || $permintaan->status != 'surat_jalan') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid');
             return redirect('preorder');
+        }
+
+        if (!$this->canManageSourceWarehouse($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang sumber yang dapat menandai pengiriman');
+            return redirect('preorder/detail/' . $id);
         }
 
         $this->preorderModel->updateStatus($id, 'dikirim');
@@ -397,7 +407,7 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Halaman form verifikasi penerimaan (Staff)
+     * Halaman form verifikasi penerimaan (requesting project admin or super-admin)
      */
     public function verifikasi($id)
     {
@@ -406,6 +416,11 @@ class Preorder extends MY_Controller
         if (!$permintaan || $permintaan->status != 'dikirim') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid atau belum dikirim');
             return redirect('preorder');
+        }
+
+        if (!$this->canVerifyAsRequester($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang tujuan yang dapat melakukan verifikasi penerimaan');
+            return redirect('preorder/detail/' . $id);
         }
 
         $surat_jalan = $this->suratJalanModel->getSuratJalanByPermintaan($id);
@@ -425,7 +440,7 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Proses verifikasi penerimaan + update stok
+     * Proses verifikasi penerimaan + update stok (requesting project admin or super-admin)
      */
     public function store_verifikasi($id)
     {
@@ -434,6 +449,11 @@ class Preorder extends MY_Controller
         if (!$permintaan || $permintaan->status != 'dikirim') {
             $this->session->set_flashdata('error', 'Permintaan tidak valid');
             return redirect('preorder');
+        }
+
+        if (!$this->canVerifyAsRequester($permintaan)) {
+            $this->session->set_flashdata('error', 'Hanya Project Admin gudang tujuan yang dapat melakukan verifikasi penerimaan');
+            return redirect('preorder/detail/' . $id);
         }
 
         $surat_jalan = $this->suratJalanModel->getSuratJalanByPermintaan($id);
@@ -531,18 +551,23 @@ class Preorder extends MY_Controller
     }
 
     /**
-     * Hapus permintaan (Admin only)
+     * Hapus permintaan (admin or requester pre-approval)
      */
     public function delete($id)
     {
-        if ($this->session->userdata('role') != 'admin') {
-            $this->session->set_flashdata('error', 'Anda tidak memiliki akses untuk menghapus permintaan');
-            return redirect('preorder');
-        }
-
         $permintaan = $this->preorderModel->getPermintaanById($id);
         if (!$permintaan) {
             $this->session->set_flashdata('error', 'Data permintaan tidak ditemukan');
+            return redirect('preorder');
+        }
+
+        $role = $this->session->userdata('role');
+        $userId = $this->session->userdata('id_user');
+        $isAdmin = ($role == 'admin');
+        $isRequesterPreApproval = ($permintaan->id_user == $userId && $permintaan->status == 'menunggu');
+
+        if (!$isAdmin && !$isRequesterPreApproval) {
+            $this->session->set_flashdata('error', 'Anda tidak memiliki akses untuk menghapus permintaan ini');
             return redirect('preorder');
         }
 
@@ -586,6 +611,40 @@ class Preorder extends MY_Controller
     }
 
     /**
+     * Returns true if the current user can manage the source/target warehouse of a preorder.
+     * This covers approve, reject, surat_jalan, and kirim actions.
+     * Granted to: super-admin (all warehouses) or the staff assigned to id_gudang_asal.
+     */
+    private function canManageSourceWarehouse($permintaan)
+    {
+        $role = $this->session->userdata('role');
+        if ($role == 'admin') {
+            return true;
+        }
+        if ($role == 'staff') {
+            return getUserGudangId() == $permintaan->id_gudang_asal;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the current user can verify receipt for a preorder.
+     * This covers verifikasi and store_verifikasi actions.
+     * Granted to: super-admin (all warehouses) or the staff assigned to id_gudang_tujuan.
+     */
+    private function canVerifyAsRequester($permintaan)
+    {
+        $role = $this->session->userdata('role');
+        if ($role == 'admin') {
+            return true;
+        }
+        if ($role == 'staff') {
+            return getUserGudangId() == $permintaan->id_gudang_tujuan;
+        }
+        return false;
+    }
+
+    /**
      * API: Ambil stok barang berdasarkan gudang (untuk form create)
      */
     public function getStokByGudang($id_gudang)
@@ -593,7 +652,6 @@ class Preorder extends MY_Controller
         $stok = $this->db->select([
             'stok_gudang.id_barang',
             'stok_gudang.qty',
-            'barang.kode_barang',
             'barang.nama AS nama_barang',
             'satuan.nama AS nama_satuan'
         ])

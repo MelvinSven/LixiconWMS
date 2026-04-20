@@ -131,8 +131,7 @@
                                                 <input type="checkbox" id="checkAll" title="Pilih Semua">
                                             </th>
                                             <th width="4%">No</th>
-                                            <th width="12%">Kode Barang</th>
-                                            <th width="22%">Nama Barang</th>
+                                            <th width="30%">Nama Barang</th>
                                             <th width="10%">Satuan</th>
                                             <th width="10%" class="text-center">Stok Tersedia</th>
                                             <th width="13%">Qty Permintaan</th>
@@ -227,7 +226,6 @@
                     <input type="checkbox" class="item-check" data-id="${item.id_barang}" data-stok="${item.qty}">
                 </td>
                 <td>${index + 1}</td>
-                <td>${item.kode_barang || '-'}</td>
                 <td>${item.nama_barang}</td>
                 <td>${item.nama_satuan}</td>
                 <td class="text-center"><span>${item.qty}</span></td>
