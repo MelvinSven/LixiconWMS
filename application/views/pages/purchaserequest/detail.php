@@ -1,7 +1,15 @@
+<style>
+    @media (min-width: 768px) {
+        .w-md-50 {
+            width: 50% !important;
+        }
+    }
+</style>
 <?php
 $statusConfig = [
     'menunggu' => ['badge' => 'badge-secondary', 'icon' => 'fas fa-clock', 'label' => 'Menunggu'],
     'ditolak' => ['badge' => 'badge-danger', 'icon' => 'fas fa-times', 'label' => 'Ditolak'],
+    'disetujui' => ['badge' => 'badge-info', 'icon' => 'fas fa-check', 'label' => 'Disetujui'],
     'diproses' => ['badge' => 'badge-warning', 'icon' => 'fas fa-cog', 'label' => 'Diproses'],
     'selesai' => ['badge' => 'badge-success', 'icon' => 'fas fa-check-circle', 'label' => 'Selesai'],
     'belum_selesai' => ['badge' => 'badge-dark', 'icon' => 'fas fa-exclamation-triangle', 'label' => 'Belum Selesai'],
@@ -13,7 +21,9 @@ $itemStatusConfig = [
 ];
 $sc = $statusConfig[$pr->status] ?? ['badge' => 'badge-secondary', 'icon' => 'fas fa-question', 'label' => $pr->status];
 $role = $this->session->userdata('role');
-$canVerify = ($role == 'staff' && in_array($pr->status, ['diproses', 'belum_selesai']));
+$canVerify = ($role == 'staff' && in_array($pr->status, ['disetujui', 'belum_selesai']));
+$showDelivery = in_array($pr->status, ['disetujui', 'belum_selesai', 'selesai']);
+$canEditDelivery = in_array($role, ['purchasing_admin', 'admin']) && in_array($pr->status, ['disetujui', 'belum_selesai']);
 $hasUnverified = false;
 foreach ($details as $d) {
     if ((int) ($d->is_sesuai ?? -1) !== 1) {
@@ -58,7 +68,8 @@ foreach ($details as $d) {
                             <tr>
                                 <th>Tanggal PR</th>
                                 <td><?= date('d M Y', strtotime($pr->tanggal_pr)) ?>
-                                    <?= $pr->created_at ? date('H:i', strtotime($pr->created_at)) : '' ?></td>
+                                    <?= $pr->created_at ? date('H:i', strtotime($pr->created_at)) : '' ?>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -96,7 +107,7 @@ foreach ($details as $d) {
                     </button>
                 <?php endif; ?>
 
-                <h5 class="mt-4 mb-2"><i class="fas fa-boxes mr-2"></i>Daftar Barang</h5>
+                <h3 class="mt-4 mb-2 "><i class="fas fa-boxes mr-2"></i>Daftar Barang</h3>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm mb-0">
                         <thead class="thead-light">
@@ -106,16 +117,13 @@ foreach ($details as $d) {
                                 <th width="7%">Satuan</th>
                                 <th width="6%" class="text-right">Qty</th>
                                 <th width="8%" class="text-right">Diterima</th>
-                                <th width="13%" class="text-center">Status</th>
-                                <!-- <th width="15%">Keterangan</th> -->
-
+                                <th width="13%" class="text-center">Status Verifikasi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($details)): ?>
                                 <tr>
-                                    <td colspan="<?= $role == 'staff' ? 9 : 8 ?>" class="text-center py-3 text-muted">Tidak
-                                        ada item.</td>
+                                    <td colspan="6" class="text-center py-3 text-muted">Tidak ada item.</td>
                                 </tr>
                             <?php else:
                                 foreach ($details as $i => $it):
@@ -136,13 +144,69 @@ foreach ($details as $d) {
                                         </td>
                                         <td class="text-center"><span
                                                 class="badge <?= $isc['badge'] ?>"><?= $isc['label'] ?></span></td>
-
-
                                     </tr>
                                 <?php endforeach; endif; ?>
                         </tbody>
                     </table>
                 </div>
+
+                <?php if ($showDelivery && !empty($details)): ?>
+                    <h3 class="mt-4 mb-2"><i class="fas fa-shipping-fast mr-2"></i>Status Pengiriman Barang</h3>
+                    <?php
+                    $stateOrder = ['diproses' => 0, 'dikirim' => 1, 'sampai' => 2];
+                    $stateLabels = ['diproses' => 'Diproses', 'dikirim' => 'Dikirim', 'sampai' => 'Sampai'];
+                    $stateIcons = ['diproses' => 'fas fa-shopping-cart', 'dikirim' => 'fas fa-truck', 'sampai' => 'fas fa-check-circle'];
+                    foreach ($details as $it):
+                        $state = $it->status_pengiriman ?? 'diproses';
+                        $step = $stateOrder[$state] ?? 0;
+                        ?>
+                        <div class="border rounded mb-3 p-3 w-100 w-md-50">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong><?= htmlspecialchars($it->nama_barang) ?></strong>
+                                <small class="text-muted">Qty: <?= (int) $it->qty ?></small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <?php foreach (['diproses', 'dikirim', 'sampai'] as $idx => $s):
+                                    $active = ($step >= $idx);
+                                    $isLast = ($s === 'sampai');
+                                    $circleClass = $active ? ($isLast && $step === 2 ? 'bg-success text-white' : 'bg-primary text-white') : 'bg-light border text-muted';
+                                    $labelClass = $active ? ($isLast && $step === 2 ? 'text-success font-weight-bold' : 'text-primary font-weight-bold') : 'text-muted';
+                                    ?>
+                                    <div class="text-center" style="flex: 0 0 auto; min-width: 64px;">
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center <?= $circleClass ?>"
+                                            style="width:36px;height:36px;">
+                                            <i class="<?= $stateIcons[$s] ?> fa-sm"></i>
+                                        </div>
+                                        <div class="small mt-1 <?= $labelClass ?>"><?= $stateLabels[$s] ?></div>
+                                    </div>
+                                    <?php if (!$isLast): ?>
+                                        <div style="flex:1; height:3px; background:<?= ($step > $idx) ? '#007bff' : '#dee2e6' ?>;">
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php if ($canEditDelivery): ?>
+                                <div class="mt-2">
+                                    <?php foreach (['diproses', 'dikirim', 'sampai'] as $s):
+                                        if ($s === $state)
+                                            continue;
+                                        $btnClass = ['diproses' => 'btn-outline-secondary', 'dikirim' => 'btn-outline-info', 'sampai' => 'btn-outline-success'][$s];
+                                        $btnIcon = ['diproses' => 'fas fa-undo', 'dikirim' => 'fas fa-truck', 'sampai' => 'fas fa-check'][$s];
+                                        ?>
+                                        <form action="<?= base_url('purchaserequest/update_status_pengiriman/' . $it->id) ?>"
+                                            method="POST" style="display:inline;" class="mr-1">
+                                            <input type="hidden" name="new_state" value="<?= $s ?>">
+                                            <button type="submit" class="btn <?= $btnClass ?> btn-sm"
+                                                onclick="return confirm('Set status pengiriman menjadi &quot;<?= $stateLabels[$s] ?>&quot;?')">
+                                                <i class="<?= $btnIcon ?> mr-1"></i><?= $stateLabels[$s] ?>
+                                            </button>
+                                        </form>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
 
                 <?php if (!empty($surat_jalan_list)): ?>
                     <h5 class="mt-4 mb-2"><i class="fas fa-file-pdf text-danger mr-2"></i>Surat Jalan</h5>
