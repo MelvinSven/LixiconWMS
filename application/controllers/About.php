@@ -11,7 +11,6 @@ class About extends MY_Controller
         $is_login = $this->session->userdata('is_login');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }

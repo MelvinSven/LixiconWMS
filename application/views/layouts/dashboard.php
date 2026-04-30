@@ -109,8 +109,10 @@
                                     </div>
                                 </form>
                             <?php else: ?>
-                                <button type="button" class="btn btn-primary btn-rounded"><i class="fas fa-calendar"></i>
-                                    &nbsp;<?= date('d/m/y') ?></button>
+                                <button type="button" class="btn btn-primary rounded-lg"><i class="fas fa-calendar"></i>
+                                    &nbsp;
+                                    <?= date('d/m/y') ?>
+                                </button>
                             <?php endif ?>
                         </div>
                     </div>

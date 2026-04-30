@@ -6,6 +6,17 @@ application/cache/*
 application/logs/*
 !application/logs/index.html
 
+application/sessions/*
+
+uploads/items/*
+!uploads/items/index.html
+uploads/purchaserequests/*
+!uploads/purchaserequests/index.html
+uploads/surat_jalan/*
+!uploads/surat_jalan/index.html
+
+.claude/
+
 !application/*/.htaccess
 
 composer.lock

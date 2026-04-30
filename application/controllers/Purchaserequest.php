@@ -9,7 +9,6 @@ class Purchaserequest extends MY_Controller
         parent::__construct();
 
         if (!$this->session->userdata('is_login')) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }
@@ -91,8 +90,12 @@ class Purchaserequest extends MY_Controller
             return redirect('purchaserequest/create');
         }
 
-        // Handle optional PR image upload (JPG/PNG)
+        // Handle required PR image upload (JPG/PNG)
         $foto_pr = null;
+        if (empty($_FILES['foto_pr']['name'])) {
+            $this->session->set_flashdata('error', 'Foto Purchase Request wajib diunggah');
+            return redirect('purchaserequest/create');
+        }
         if (!empty($_FILES['foto_pr']['name'])) {
             $upload_path = FCPATH . 'uploads/purchaserequests/';
             if (!is_dir($upload_path)) {
@@ -208,7 +211,7 @@ class Purchaserequest extends MY_Controller
     }
 
     /**
-     * Accept PR (Purchasing Admin only) — langsung jadi "diproses"
+     * Accept PR (Purchasing Admin only) — status jadi "disetujui"
      */
     public function accept($id)
     {
@@ -219,16 +222,16 @@ class Purchaserequest extends MY_Controller
 
         $pr = $this->prModel->getPRById($id);
         if (!$pr || $pr->status != 'menunggu') {
-            $this->session->set_flashdata('error', 'PR tidak valid atau sudah diproses');
+            $this->session->set_flashdata('error', 'PR tidak valid atau sudah direspons');
             return redirect('purchaserequest');
         }
 
-        $this->prModel->updateStatus($id, 'diproses', [
+        $this->prModel->updateStatus($id, 'disetujui', [
             'id_user_respon' => $this->session->userdata('id_user'),
             'tanggal_respon' => date('Y-m-d H:i:s')
         ]);
 
-        $this->session->set_flashdata('success', 'Purchase Request disetujui dan berstatus "Diproses".');
+        $this->session->set_flashdata('success', 'Purchase Request disetujui.');
         return redirect('purchaserequest/detail/' . $id);
     }
 
@@ -275,7 +278,7 @@ class Purchaserequest extends MY_Controller
         }
 
         $pr = $this->prModel->getPRById($id);
-        if (!$pr || !in_array($pr->status, ['diproses', 'belum_selesai'])) {
+        if (!$pr || !in_array($pr->status, ['disetujui', 'belum_selesai'])) {
             $this->session->set_flashdata('error', 'PR tidak valid atau belum disetujui');
             return redirect('purchaserequest/detail/' . $id);
         }
@@ -310,7 +313,7 @@ class Purchaserequest extends MY_Controller
         }
 
         $pr = $this->prModel->getPRById($id);
-        if (!$pr || !in_array($pr->status, ['diproses', 'belum_selesai'])) {
+        if (!$pr || !in_array($pr->status, ['disetujui', 'belum_selesai'])) {
             $this->session->set_flashdata('error', 'PR tidak valid');
             return redirect('purchaserequest');
         }
@@ -499,6 +502,45 @@ class Purchaserequest extends MY_Controller
             $this->session->set_flashdata('warning', 'Qty diperbarui tetapi masih belum sesuai dengan qty diterima.');
         }
 
+        return redirect('purchaserequest/detail/' . $detail->id_pr);
+    }
+
+    /**
+     * Set delivery state per item (Purchasing Admin atau Admin).
+     * Accepts POST param 'new_state' = diproses|dikirim|sampai.
+     * Allowed when PR is 'disetujui' or 'belum_selesai'.
+     */
+    public function update_status_pengiriman($id_detail)
+    {
+        $role = $this->session->userdata('role');
+        if (!in_array($role, ['purchasing_admin', 'admin'])) {
+            $this->session->set_flashdata('error', 'Hanya Purchasing Admin atau Admin yang dapat mengubah status pengiriman');
+            return redirect('purchaserequest');
+        }
+
+        $detail = $this->prModel->getDetailById($id_detail);
+        if (!$detail) {
+            $this->session->set_flashdata('error', 'Item tidak ditemukan');
+            return redirect('purchaserequest');
+        }
+
+        $pr = $this->prModel->getPRById($detail->id_pr);
+        if (!$pr || !in_array($pr->status, ['disetujui', 'belum_selesai'])) {
+            $this->session->set_flashdata('error', 'Status pengiriman hanya dapat diubah saat PR berstatus "Disetujui" atau "Belum Selesai"');
+            return redirect('purchaserequest/detail/' . $detail->id_pr);
+        }
+
+        $allowed_states = ['diproses', 'dikirim', 'sampai'];
+        $new_state = $this->input->post('new_state');
+        if (!in_array($new_state, $allowed_states)) {
+            $this->session->set_flashdata('error', 'Status pengiriman tidak valid');
+            return redirect('purchaserequest/detail/' . $detail->id_pr);
+        }
+
+        $this->prModel->updateStatusPengiriman($id_detail, $new_state);
+
+        $labels = ['diproses' => 'Diproses', 'dikirim' => 'Dikirim', 'sampai' => 'Sampai'];
+        $this->session->set_flashdata('success', 'Status pengiriman item diubah menjadi "' . $labels[$new_state] . '"');
         return redirect('purchaserequest/detail/' . $detail->id_pr);
     }
 

@@ -62,7 +62,7 @@ foreach ($details as $d) {
                                 <td><?= htmlspecialchars($pr->nama_user ?? '-') ?></td>
                             </tr>
                             <tr>
-                                <th>Gudang Tujuan</th>
+                                <th>Project</th>
                                 <td><?= htmlspecialchars($pr->nama_gudang ?? '-') ?></td>
                             </tr>
                             <tr>
@@ -253,7 +253,7 @@ foreach ($details as $d) {
                 <?php endif; ?>
 
                 <div class="mt-4 d-flex justify-content-between">
-                    <a href="<?= base_url('purchaserequest') ?>" class="btn btn-secondary">
+                    <a href="<?= base_url('purchaserequest') ?>" class="btn btn-primary">
                         <i data-feather="arrow-left" class="feather-sm me-1"></i> Kembali
                     </a>
                     <div>

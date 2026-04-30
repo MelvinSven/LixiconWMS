@@ -16,7 +16,8 @@
                 <a href="<?= base_url('home') ?>">
                     <b class="logo-icon">
                         <!-- Dark Logo icon -->
-                        <img src="<?= base_url('assets/images/Logo Lixicon.png') ?>" height="40" alt="homepage" class="dark-logo" />
+                        <img src="<?= base_url('assets/images/Logo Lixicon.png') ?>" height="40" alt="homepage"
+                            class="dark-logo" />
                         <!-- Light Logo icon -->
                         <!-- <img src="<?= base_url('assets/images/Brown.png') ?>" height="40" alt="homepage" class="light-logo" /> -->
                     </b>
@@ -24,9 +25,11 @@
                     <!-- Logo text -->
                     <span class="logo-text ml-2">
                         <!-- dark Logo text -->
-                        <img src="<?= base_url('assets/images/Brown.png') ?>" height="30" width="100" alt="homepage" class="dark-logo" />
+                        <img src="<?= base_url('assets/images/Brown.png') ?>" height="30" width="100" alt="homepage"
+                            class="dark-logo" />
                         <!-- Light Logo text -->
-                        <img src="<?= base_url('assets/images/Brown.png') ?>" class="light-logo" height="30" width="100" alt="homepage" />
+                        <img src="<?= base_url('assets/images/Brown.png') ?>" class="light-logo" height="30" width="100"
+                            alt="homepage" />
                     </span>
                 </a>
             </div>
@@ -37,9 +40,8 @@
             <!-- Toggle which is visible on mobile only -->
             <!-- ============================================================== -->
             <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"
-                data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
-                    class="ti-more"></i></a>
+                data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation"><i class="ti-more"></i></a>
         </div>
         <!-- ============================================================== -->
         <!-- End Logo -->
@@ -51,7 +53,10 @@
             <ul class="navbar-nav float-left mr-auto ml-3 pl-1">
                 <li class="nav-item d-none d-md-block">
                     <a class="nav-link" href="javascript:void(0)">
-                        <button type="button" class="btn btn-rounded btn-light"><i class="fas fa-user"></i> &nbsp;Anda sebagai <?= $this->session->userdata('role') ?></button>
+                        <button type="button" class="btn rounded-lg btn-light"><i class="fas fa-user mr-1"></i>
+                            &nbsp;Anda
+                            sebagai
+                            <?= $this->session->userdata('role') ?></button>
                     </a>
                 </li>
             </ul>
@@ -62,18 +67,19 @@
                 <!-- ============================================================== -->
                 <!-- Search -->
                 <!-- ============================================================== -->
-                
+
                 <!-- ============================================================== -->
                 <!-- User profile and search -->
                 <!-- ============================================================== -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
-                        <img src="<?= $this->session->userdata('role') == 'admin' ? base_url('assets/images/navbar/admin.png') : base_url('assets/images/navbar/user.png') ?>" alt="user" class="rounded-circle" width="40">
+                        <img src="<?= $this->session->userdata('role') == 'admin' ? base_url('assets/images/navbar/admin.png') : base_url('assets/images/navbar/user.png') ?>"
+                            alt="user" class="rounded-circle" width="40">
                         <span class="ml-2 d-none d-lg-inline-block">
                             <span>Hallo,</span>
                             <span class="text-dark"><?= $this->session->userdata('nama') ?></span>
-                            <i data-feather="chevron-down"class="svg-icon"></i>
+                            <i data-feather="chevron-down" class="svg-icon"></i>
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right user-dd animated flipInY">
@@ -81,7 +87,8 @@
                             <i data-feather="user" class="svg-icon mr-2 ml-1"></i>My Profile
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="<?= base_url("user/edit/" . $this->session->userdata('id_user')) ?>">
+                        <a class="dropdown-item"
+                            href="<?= base_url("user/edit/" . $this->session->userdata('id_user')) ?>">
                             <i data-feather="settings" class="svg-icon mr-2 ml-1"></i>Account Setting
                         </a>
                         <div class="dropdown-divider"></div>

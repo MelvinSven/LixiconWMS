@@ -18,7 +18,6 @@ class Items extends MY_Controller
         $is_login = $this->session->userdata('is_login');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }
@@ -34,12 +33,22 @@ class Items extends MY_Controller
         $data['breadcrumb_path'] = 'Pendataan Barang / List Barang';
         $data['search_params'] = [];
 
-        // Query dengan raw DB untuk handle LEFT JOIN supplier dengan benar
+        $is_staff = $this->session->userdata('role') == 'staff';
+        $id_gudang = $is_staff ? (int)getUserGudangId() : null;
+
+        if ($is_staff) {
+            $qty_select = 'stok_gudang.qty';
+            $data['total_rows'] = $this->db->where('id_gudang', $id_gudang)->count_all_results('stok_gudang');
+        } else {
+            $qty_select = '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty';
+            $data['total_rows'] = $this->items->count();
+        }
+
         $this->db->select([
             'barang.id AS id_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
+            $qty_select,
             'barang.image',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
@@ -48,15 +57,17 @@ class Items extends MY_Controller
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
+        if ($is_staff) {
+            $this->db->join('stok_gudang', 'stok_gudang.id_barang = barang.id AND stok_gudang.id_gudang = ' . $id_gudang, 'inner');
+        }
         $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
         $data['content'] = $this->db->get()->result();
 
-        $data['total_rows'] = $this->items->count();
         $data['pagination'] = $this->items->makePagination(base_url('items'), 2, $data['total_rows']);
         $data['start'] = $this->barang->calculateRealOffset($page);
         $data['page'] = 'pages/items/index';
-
-        // print_r(getUnitName(1)); exit;
+        $data['is_staff'] = $is_staff;
+        $data['user_gudang_id'] = $id_gudang;
 
         $this->view($data);
     }
@@ -76,12 +87,27 @@ class Items extends MY_Controller
         $data['breadcrumb_path'] = 'Pendataan Barang / Tipe / ' . ucfirst(getUnitName($id_unit));
         $data['search_params'] = [];
 
-        // Query dengan raw DB untuk handle LEFT JOIN supplier dengan benar
+        $is_staff = $this->session->userdata('role') == 'staff';
+        $id_gudang = $is_staff ? (int)getUserGudangId() : null;
+
+        if ($is_staff) {
+            $qty_select = 'stok_gudang.qty';
+            $data['total_rows'] = $this->db
+                ->from('stok_gudang')
+                ->join('barang', 'barang.id = stok_gudang.id_barang', 'inner')
+                ->where('stok_gudang.id_gudang', $id_gudang)
+                ->where('barang.id_satuan', $id_unit)
+                ->count_all_results();
+        } else {
+            $qty_select = '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty';
+            $data['total_rows'] = $this->items->where('id_satuan', $id_unit)->count();
+        }
+
         $this->db->select([
             'barang.id AS id_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
+            $qty_select,
             'barang.image',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
@@ -91,10 +117,12 @@ class Items extends MY_Controller
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
         $this->db->where('barang.id_satuan', $id_unit);
+        if ($is_staff) {
+            $this->db->join('stok_gudang', 'stok_gudang.id_barang = barang.id AND stok_gudang.id_gudang = ' . $id_gudang, 'inner');
+        }
         $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
         $data['content'] = $this->db->get()->result();
 
-        $data['total_rows'] = $this->items->where('id_satuan', $id_unit)->count();
         $data['pagination'] = $this->items->makePagination(
             base_url("items/unit/$id_unit"),
             4,
@@ -102,6 +130,8 @@ class Items extends MY_Controller
         );
         $data['start'] = $this->barang->calculateRealOffset($page);
         $data['page'] = 'pages/items/index';
+        $data['is_staff'] = $is_staff;
+        $data['user_gudang_id'] = $id_gudang;
 
         $this->view($data);
     }
@@ -122,46 +152,51 @@ class Items extends MY_Controller
         $data['page'] = 'pages/items/index';
         $data['search_params'] = [];
 
-        if ($param === 'available') {
-            $data['total_rows'] = $this->items->where('qty >', 0)->count();
+        $is_staff = $this->session->userdata('role') == 'staff';
+        $id_gudang = $is_staff ? (int)getUserGudangId() : null;
 
-            $this->db->select([
-                'barang.id AS id_barang',
-                'barang.nama AS nama_barang',
-                'barang.deskripsi',
-                '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
-                'barang.image',
-                'barang.id_lokasi',
-                'satuan.nama AS nama_satuan',
-                'lokasi_barang.nama_lokasi'
-            ]);
-            $this->db->from('barang');
-            $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-            $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
-            $this->db->where('barang.qty >', 0);
-            $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
-            $data['content'] = $this->db->get()->result();
-
+        if ($is_staff) {
+            $qty_select = 'stok_gudang.qty';
+            $qty_col = 'stok_gudang.qty';
         } else {
-            $data['total_rows'] = $this->items->where('qty', 0)->count();
-
-            $this->db->select([
-                'barang.id AS id_barang',
-                'barang.nama AS nama_barang',
-                'barang.deskripsi',
-                '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
-                'barang.image',
-                'barang.id_lokasi',
-                'satuan.nama AS nama_satuan',
-                'lokasi_barang.nama_lokasi'
-            ]);
-            $this->db->from('barang');
-            $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
-            $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
-            $this->db->where('barang.qty', 0);
-            $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
-            $data['content'] = $this->db->get()->result();
+            $qty_select = '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty';
+            $qty_col = 'barang.qty';
         }
+
+        $qty_op = ($param === 'available') ? '>' : '=';
+        $qty_val = ($param === 'available') ? 0 : 0;
+
+        if ($is_staff) {
+            $data['total_rows'] = $this->db
+                ->from('stok_gudang')
+                ->where('id_gudang', $id_gudang)
+                ->where('qty ' . $qty_op, $qty_val)
+                ->count_all_results();
+        } else {
+            $data['total_rows'] = ($param === 'available')
+                ? $this->items->where('qty >', 0)->count()
+                : $this->items->where('qty', 0)->count();
+        }
+
+        $this->db->select([
+            'barang.id AS id_barang',
+            'barang.nama AS nama_barang',
+            'barang.deskripsi',
+            $qty_select,
+            'barang.image',
+            'barang.id_lokasi',
+            'satuan.nama AS nama_satuan',
+            'lokasi_barang.nama_lokasi'
+        ]);
+        $this->db->from('barang');
+        $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
+        $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
+        if ($is_staff) {
+            $this->db->join('stok_gudang', 'stok_gudang.id_barang = barang.id AND stok_gudang.id_gudang = ' . $id_gudang, 'inner');
+        }
+        $this->db->where($qty_col . ' ' . $qty_op, $qty_val);
+        $this->db->limit($this->barang->getPerPage(), $this->barang->calculateRealOffset($page));
+        $data['content'] = $this->db->get()->result();
 
         $data['pagination'] = $this->items->makePagination(
             base_url("items/availability/$param"),
@@ -169,6 +204,8 @@ class Items extends MY_Controller
             $data['total_rows']
         );
         $data['start'] = $this->barang->calculateRealOffset($page);
+        $data['is_staff'] = $is_staff;
+        $data['user_gudang_id'] = $id_gudang;
 
         $this->view($data);
     }
@@ -274,10 +311,18 @@ class Items extends MY_Controller
         $data['breadcrumb_path'] = "Pendataan Barang / Hasil Pencarian";
         $data['search_params'] = $search_params;
 
+        $is_staff = $this->session->userdata('role') == 'staff';
+        $id_gudang = $is_staff ? (int)getUserGudangId() : null;
+        $qty_col = $is_staff ? 'stok_gudang.qty' : 'barang.qty';
+        $allowed_qty_ops = ['>', '<', '>=', '<=', '=', '!='];
+
         // Build base query untuk count
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
+        if ($is_staff) {
+            $this->db->join('stok_gudang', 'stok_gudang.id_barang = barang.id AND stok_gudang.id_gudang = ' . $id_gudang, 'inner');
+        }
 
         // Apply filters untuk count
         if (!empty($search_params['nama_barang'])) {
@@ -292,26 +337,29 @@ class Items extends MY_Controller
         if (!empty($search_params['satuan'])) {
             $this->db->where('barang.id_satuan', $search_params['satuan']);
         }
-        $allowed_qty_ops = ['>', '<', '>=', '<=', '=', '!='];
         if (!empty($search_params['qty_operator']) && $search_params['qty_value'] !== '' && in_array($search_params['qty_operator'], $allowed_qty_ops)) {
-            $this->db->where('barang.qty ' . $search_params['qty_operator'], (int) $search_params['qty_value']);
+            $this->db->where($qty_col . ' ' . $search_params['qty_operator'], (int) $search_params['qty_value']);
         }
         if (!empty($search_params['status'])) {
             if ($search_params['status'] == 'tersedia') {
-                $this->db->where('barang.qty >', 0);
+                $this->db->where($qty_col . ' >', 0);
             } else {
-                $this->db->where('barang.qty', 0);
+                $this->db->where($qty_col, 0);
             }
         }
 
         $data['total_rows'] = $this->db->count_all_results();
+
+        $qty_select = $is_staff
+            ? 'stok_gudang.qty'
+            : '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty';
 
         // Build query untuk data
         $this->db->select([
             'barang.id AS id_barang',
             'barang.nama AS nama_barang',
             'barang.deskripsi',
-            '(SELECT COALESCE(SUM(sg.qty), 0) FROM stok_gudang sg WHERE sg.id_barang = barang.id) AS qty',
+            $qty_select,
             'barang.image',
             'barang.id_lokasi',
             'satuan.nama AS nama_satuan',
@@ -320,6 +368,9 @@ class Items extends MY_Controller
         $this->db->from('barang');
         $this->db->join('satuan', 'barang.id_satuan = satuan.id', 'left');
         $this->db->join('lokasi_barang', 'barang.id_lokasi = lokasi_barang.id_lokasi', 'left');
+        if ($is_staff) {
+            $this->db->join('stok_gudang', 'stok_gudang.id_barang = barang.id AND stok_gudang.id_gudang = ' . $id_gudang, 'inner');
+        }
 
         // Apply filters lagi untuk data
         if (!empty($search_params['nama_barang'])) {
@@ -335,13 +386,13 @@ class Items extends MY_Controller
             $this->db->where('barang.id_satuan', $search_params['satuan']);
         }
         if (!empty($search_params['qty_operator']) && $search_params['qty_value'] !== '' && in_array($search_params['qty_operator'], $allowed_qty_ops)) {
-            $this->db->where('barang.qty ' . $search_params['qty_operator'], (int) $search_params['qty_value']);
+            $this->db->where($qty_col . ' ' . $search_params['qty_operator'], (int) $search_params['qty_value']);
         }
         if (!empty($search_params['status'])) {
             if ($search_params['status'] == 'tersedia') {
-                $this->db->where('barang.qty >', 0);
+                $this->db->where($qty_col . ' >', 0);
             } else {
-                $this->db->where('barang.qty', 0);
+                $this->db->where($qty_col, 0);
             }
         }
 
@@ -355,6 +406,8 @@ class Items extends MY_Controller
         );
         $data['start'] = $this->barang->calculateRealOffset($page);
         $data['page'] = 'pages/items/index';
+        $data['is_staff'] = $is_staff;
+        $data['user_gudang_id'] = $id_gudang;
 
         $this->view($data);
     }
@@ -391,7 +444,8 @@ class Items extends MY_Controller
 
         // Ambil data dari form
         $qty = $this->input->post('qty');
-        $id_gudang = $this->input->post('id_gudang');
+        $user_gudang = getUserGudangId();
+        $id_gudang = ($user_gudang !== null) ? $user_gudang : $this->input->post('id_gudang');
         $nama = $this->input->post('nama');
 
         // Validasi duplikasi: cek apakah barang dengan nama yang sama sudah ada
@@ -439,10 +493,10 @@ class Items extends MY_Controller
         $data['breadcrumb_title'] = 'Register Barang';
         $data['breadcrumb_path'] = 'Pendataan Barang / Register Barang';
         $data['page'] = 'pages/items/register';
-
-        // ✅ Tambahkan variabel kosong biar tidak error di layout utama
         $data['content'] = [];
         $data['pagination'] = '';
+        $data['user_role'] = $this->session->userdata('role');
+        $data['user_gudang_id'] = getUserGudangId();
 
         $this->view($data);
     }
@@ -530,6 +584,25 @@ class Items extends MY_Controller
             redirect(base_url('items'));
             return;
         }
+
+        // Block deletion if item is referenced by any non-finished purchase request
+        $active_pr_count = $this->db
+            ->select('COUNT(*) as cnt')
+            ->from('purchase_request_detail prd')
+            ->join('purchase_request pr', 'prd.id_pr = pr.id')
+            ->where('prd.id_barang', $id)
+            ->where('pr.status !=', 'selesai')
+            ->get()->row()->cnt;
+
+        if ($active_pr_count > 0) {
+            $this->session->set_flashdata('error', 'Barang tidak dapat dihapus karena masih terdapat dalam Purchase Request yang belum selesai.');
+            redirect(base_url('items'));
+            return;
+        }
+
+        // Preserve item name in PR/PO detail rows before nullifying via FK ON DELETE SET NULL
+        $this->db->where('id_barang', $id)->where('nama_barang_manual IS NULL', null, false)
+            ->update('purchase_request_detail', ['nama_barang_manual' => $barang->nama]);
 
         // 🗑️ Hapus gambar fisik jika bukan default
         if (!empty($barang->image) && $barang->image != 'uploads/items/default.png') {

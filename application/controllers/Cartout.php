@@ -17,7 +17,6 @@ class Cartout extends MY_Controller
         $this->id_user = $this->session->userdata('id_user');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }

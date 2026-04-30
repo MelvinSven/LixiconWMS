@@ -41,13 +41,13 @@
                             <span class="hide-menu">Tambah Satuan</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="<?= base_url('units') ?>" aria-expanded="false">
+                            <i data-feather="layers" class="feather-icon"></i>
+                            <span class="hide-menu">Daftar Satuan</span>
+                        </a>
+                    </li>
                 <?php endif ?>
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= base_url('units') ?>" aria-expanded="false">
-                        <i data-feather="layers" class="feather-icon"></i>
-                        <span class="hide-menu">Daftar Satuan</span>
-                    </a>
-                </li>
 
                 <!-- <?php if ($this->session->userdata('role') == 'admin'): ?>
                 <li class="sidebar-item">
@@ -63,12 +63,12 @@
                         <span class="hide-menu">List Kategori</span>
                     </a>
                 </li> -->
-                <li class="sidebar-item">
+                <!-- <li class="sidebar-item">
                     <a class="sidebar-link" href="<?= base_url('locations') ?>" aria-expanded="false">
                         <i class="fas fa-map-marker-alt"></i>
                         <span class="hide-menu">Daftar Letak Barang</span>
                     </a>
-                </li>
+                </li> -->
 
                 <li class="list-divider"></li>
 
@@ -97,12 +97,12 @@
                 <li class="sidebar-item">
                     <a class="sidebar-link sidebar-link" href="<?= base_url('warehouses') ?>" aria-expanded="false">
                         <i class="fas fa-warehouse"></i>
-                        <span class="hide-menu">Gudang</span>
+                        <span class="hide-menu">Daftar Gudang</span>
                     </a>
                 </li>
-                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                <!-- <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
                     <li class="list-divider"></li>
-                    <!-- Submemu Barang -->
+                    
                     <li class="nav-small-cap"><span class="hide-menu">Barang Masuk</span></li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="<?= base_url('cartin') ?>" aria-expanded="false">
@@ -116,10 +116,10 @@
                             <span class="hide-menu">Catatan Masuk</span>
                         </a>
                     </li>
-                <?php endif ?>
+                <?php endif ?> -->
                 <li class="list-divider"></li>
-                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-                    <!-- Submemu Manajemen Inventory -->
+                <!-- <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                   
                     <li class="nav-small-cap"><span class="hide-menu">Barang Keluar</span></li>
                     <li class="sidebar-item">
                         <a class="sidebar-link sidebar-link" href="<?= base_url('cartout') ?>" aria-expanded="false">
@@ -134,9 +134,9 @@
                         </a>
                     </li>
                     <li class="list-divider"></li>
-                <?php endif ?>
-                <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-                    <!-- Submenu Transfer Barang -->
+                <?php endif ?> -->
+                <!-- <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
+                    
                     <li class="nav-small-cap"><span class="hide-menu">Pemindahan Barang</span></li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="<?= base_url('transfer/create') ?>" aria-expanded="false">
@@ -151,7 +151,7 @@
                         </a>
                     </li>
                     <li class="list-divider"></li>
-                <?php endif ?>
+                <?php endif ?> -->
 
                 <!-- Submenu Permintaan Barang -->
                 <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
@@ -192,14 +192,15 @@
                 <li class="list-divider"></li>
 
                 <!-- Submemu Manajemen Karyawan -->
-                <li class="nav-small-cap"><span class="hide-menu">Manajemen Staff</span></li>
-                <li class="sidebar-item">
-                    <a class="sidebar-link sidebar-link" href="<?= base_url('users') ?>" aria-expanded="false">
-                        <i data-feather="users" class="feather-icon"></i>
-                        <span class="hide-menu">List Staff</span>
-                    </a>
-                </li>
                 <?php if ($this->session->userdata('role') == 'admin'): ?>
+                    <li class="nav-small-cap"><span class="hide-menu">Manajemen Staff</span></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link sidebar-link" href="<?= base_url('users') ?>" aria-expanded="false">
+                            <i data-feather="users" class="feather-icon"></i>
+                            <span class="hide-menu">Daftar Staff</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item">
                         <a class="sidebar-link sidebar-link" href="<?= base_url('register') ?>" aria-expanded="false">
                             <i data-feather="user-plus" class="feather-icon"></i>

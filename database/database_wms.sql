@@ -277,7 +277,6 @@ CREATE TABLE `permintaan_barang` (
   `id_gudang_asal` int(11) DEFAULT NULL,
   `id_gudang_tujuan` int(11) DEFAULT NULL,
   `tanggal_permintaan` date NOT NULL,
-  `tanggal_diperlukan` date NOT NULL,
   `status` enum('menunggu','disetujui','ditolak','surat_jalan','dikirim','selesai','belum_selesai') NOT NULL DEFAULT 'menunggu',
   `keterangan` text DEFAULT NULL,
   `alasan_tolak` text DEFAULT NULL,
@@ -289,8 +288,8 @@ CREATE TABLE `permintaan_barang` (
 -- Dumping data for table `permintaan_barang`
 --
 
-INSERT INTO `permintaan_barang` (`id`, `kode_permintaan`, `id_user`, `id_gudang_asal`, `id_gudang_tujuan`, `tanggal_permintaan`, `tanggal_diperlukan`, `status`, `keterangan`, `alasan_tolak`, `created_at`, `updated_at`) VALUES
-(22, 'PO-20260406-0001', 7, 6, 2, '2026-04-06', '2026-04-08', 'menunggu', 'tes', NULL, '2026-04-06 09:55:31', '2026-04-06 09:55:31');
+INSERT INTO `permintaan_barang` (`id`, `kode_permintaan`, `id_user`, `id_gudang_asal`, `id_gudang_tujuan`, `tanggal_permintaan`, `status`, `keterangan`, `alasan_tolak`, `created_at`, `updated_at`) VALUES
+(22, 'PO-20260406-0001', 7, 6, 2, '2026-04-06', 'menunggu', 'tes', NULL, '2026-04-06 09:55:31', '2026-04-06 09:55:31');
 
 -- --------------------------------------------------------
 
@@ -402,6 +401,7 @@ CREATE TABLE `surat_jalan` (
   `id_permintaan` int(11) NOT NULL,
   `nomor_pengiriman` varchar(50) NOT NULL,
   `tanggal_pengiriman` date NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

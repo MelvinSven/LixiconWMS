@@ -15,11 +15,6 @@
                         <?= $warehouse->nama ?>
                     </h4>
                 </div>
-                <div class="card-body">
-                    <p><strong><i class="fas fa-map-marker-alt text-danger mr-2"></i>Alamat:</strong><br>
-                        <?= $warehouse->alamat ?: 'Tidak tersedia' ?>
-                    </p>
-                </div>
             </div>
         </div>
     </div>
@@ -60,13 +55,13 @@
 
     <!-- Tombol Tambah Barang ke Gudang -->
     <?php if ($can_modify): ?>
-    <div class="row mb-3">
-        <div class="col-lg-12">
-            <button class="btn btn-success" data-toggle="modal" data-target="#tambahBarangModal">
-                <i class="fas fa-plus"></i> Tambah Barang Masuk
-            </button>
+        <div class="row mb-3">
+            <div class="col-lg-12">
+                <button class="btn btn-success" data-toggle="modal" data-target="#tambahBarangModal">
+                    <i class="fas fa-plus"></i> Tambah Barang Masuk
+                </button>
+            </div>
         </div>
-    </div>
     <?php endif ?>
 
     <!-- List Stok Barang -->
@@ -85,20 +80,32 @@
                             Belum ada barang di gudang ini
                         </div>
                     <?php else: ?>
+                        <!-- Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" id="filterNama" class="form-control" placeholder="Cari nama barang...">
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filterStatus" class="form-control">
+                                    <option value="">Semua Status</option>
+                                    <option value="Tersedia">Tersedia</option>
+                                    <option value="Stok Rendah">Stok Rendah</option>
+                                    <option value="Habis">Habis</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="stokTable">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Barang</th>
                                         <th>Satuan</th>
                                         <th class="text-center">Stok</th>
-                                        <th class="text-center">Stok Min</th>
-                                        <!-- <th class="text-right">Harga</th> -->
-                                        <!-- <th class="text-right">Nilai</th> -->
                                         <th class="text-center">Status</th>
                                         <?php if ($can_modify): ?>
-                                        <th class="text-center">Aksi</th>
+                                            <th class="text-center">Aksi</th>
                                         <?php endif ?>
                                     </tr>
                                 </thead>
@@ -116,28 +123,21 @@
                                             $badge = 'warning';
                                         }
                                         ?>
-                                        <tr>
+                                        <tr data-nama="<?= strtolower($stock->nama_barang) ?>" data-status="<?= $status ?>">
                                             <td><?= $no++ ?></td>
                                             <td><?= $stock->nama_barang ?></td>
                                             <td><?= $stock->nama_satuan ?></td>
                                             <td class="text-center"><strong><?= number_format($stock->qty) ?></strong></td>
-                                            <td class="text-center"><?= number_format($stock->stok_minimum) ?></td>
-
-
                                             <td class="text-center">
                                                 <span class="badge badge-<?= $badge ?>"><?= $status ?></span>
                                             </td>
                                             <?php if ($can_modify): ?>
-                                            <td class="text-center">
-                                                <button class="btn btn-success btn-sm rounded-lg" data-toggle="modal"
-                                                    data-target="#barangMasukModal<?= $stock->id_barang ?>">
-                                                    <i class="fas fa-arrow-down"></i> Masuk
-                                                </button>
-                                                <button class="btn btn-danger btn-sm rounded-lg" data-toggle="modal"
-                                                    data-target="#barangKeluarModal<?= $stock->id_barang ?>" <?= $stock->qty <= 0 ? 'disabled' : '' ?>>
-                                                    <i class="fas fa-arrow-up"></i> Keluar
-                                                </button>
-                                            </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-primary btn-sm rounded-lg" data-toggle="modal"
+                                                        data-target="#updateStokModal<?= $stock->id_barang ?>">
+                                                        <i class="fas fa-edit"></i> Update
+                                                    </button>
+                                                </td>
                                             <?php endif ?>
                                         </tr>
                                     <?php endforeach ?>
@@ -146,7 +146,7 @@
                                     <tr>
                                         <th colspan="3" class="text-right">Total:</th>
                                         <th class="text-center"><?= number_format($total_qty) ?></th>
-                                        <th colspan="<?= $can_modify ? 3 : 2 ?>"></th>
+                                        <th colspan="<?= $can_modify ? 2 : 1 ?>"></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -164,71 +164,32 @@
 </div>
 
 <?php if ($can_modify): ?>
-<!-- Modal Tambah Barang Masuk (Barang baru ke gudang ini) -->
-<div class="modal fade" id="tambahBarangModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fas fa-plus mr-2"></i>Tambah Barang Masuk ke <?= $warehouse->nama ?>
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form action="<?= base_url('cartin/add') ?>" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="id_gudang" value="<?= $warehouse->id ?>">
-                    <input type="hidden" name="redirect_to"
-                        value="<?= base_url('warehouse/detail/' . $warehouse->id) ?>">
-
-                    <div class="form-group">
-                        <label><strong>Pilih Barang</strong></label>
-                        <select name="id_barang" class="form-control" required>
-                            <option value="">-- Pilih Barang --</option>
-                            <?php foreach ($all_items as $item): ?>
-                                <option value="<?= $item->id ?>"><?= $item->nama . ' (' . $item->nama_satuan . ')' ?></option>
-                            <?php endforeach ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label><strong>Jumlah Masuk</strong></label>
-                        <input type="number" name="qty_masuk" min="1" value="1" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-plus"></i> Tambah ke Keranjang
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<?php foreach ($stocks as $stock): ?>
-    <!-- Modal Barang Masuk -->
-    <div class="modal fade" id="barangMasukModal<?= $stock->id_barang ?>" tabindex="-1" role="dialog">
+    <!-- Modal Tambah Barang Masuk (Barang baru ke gudang ini) -->
+    <div class="modal fade" id="tambahBarangModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title"><i class="fas fa-arrow-down mr-2"></i>Barang Masuk</h5>
+                    <h5 class="modal-title"><i class="fas fa-plus mr-2"></i>Tambah Barang Masuk ke <?= $warehouse->nama ?>
+                    </h5>
                     <button type="button" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <form action="<?= base_url('cartin/add') ?>" method="POST">
                     <div class="modal-body">
-                        <input type="hidden" name="id_barang" value="<?= $stock->id_barang ?>">
                         <input type="hidden" name="id_gudang" value="<?= $warehouse->id ?>">
                         <input type="hidden" name="redirect_to"
                             value="<?= base_url('warehouse/detail/' . $warehouse->id) ?>">
 
-                        <div class="alert alert-info">
-                            <strong><?= $stock->nama_barang ?></strong><br>
-                            Gudang: <?= $warehouse->nama ?><br>
-                            Stok saat ini: <?= $stock->qty ?>     <?= $stock->nama_satuan ?>
+                        <div class="form-group">
+                            <label><strong>Pilih Barang</strong></label>
+                            <select name="id_barang" class="form-control" required>
+                                <option value="">-- Pilih Barang --</option>
+                                <?php foreach ($all_items as $item): ?>
+                                    <option value="<?= $item->id ?>"><?= $item->nama . ' (' . $item->nama_satuan . ')' ?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -247,45 +208,65 @@
         </div>
     </div>
 
-    <!-- Modal Barang Keluar -->
-    <div class="modal fade" id="barangKeluarModal<?= $stock->id_barang ?>" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title"><i class="fas fa-arrow-up mr-2"></i>Barang Keluar</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <form action="<?= base_url('cartout/add') ?>" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="id_barang" value="<?= $stock->id_barang ?>">
-                        <input type="hidden" name="id_gudang" value="<?= $warehouse->id ?>">
-                        <input type="hidden" name="redirect_to"
-                            value="<?= base_url('warehouse/detail/' . $warehouse->id) ?>">
-
-                        <div class="alert alert-info">
-                            <strong><?= $stock->nama_barang ?></strong><br>
-                            Gudang: <?= $warehouse->nama ?><br>
-                            Stok tersedia: <strong><?= $stock->qty ?></strong> <?= $stock->nama_satuan ?>
-                        </div>
-
-                        <div class="form-group">
-                            <label><strong>Jumlah Keluar</strong></label>
-                            <input type="number" name="qty_keluar" min="1" max="<?= $stock->qty ?>" value="1"
-                                class="form-control" required>
-                            <small class="text-muted">Maksimal: <?= $stock->qty ?></small>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-minus"></i> Tambah ke Keranjang
+    <?php foreach ($stocks as $stock): ?>
+        <!-- Modal Update Stok -->
+        <div class="modal fade" id="updateStokModal<?= $stock->id_barang ?>" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Update Stok Barang</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal">
+                            <span>&times;</span>
                         </button>
                     </div>
-                </form>
+                    <form action="<?= base_url('warehouse/update_stock') ?>" method="POST">
+                        <div class="modal-body">
+                            <input type="hidden" name="id_barang" value="<?= $stock->id_barang ?>">
+                            <input type="hidden" name="id_gudang" value="<?= $warehouse->id ?>">
+
+                            <div class="alert alert-info">
+                                <strong><?= $stock->nama_barang ?></strong><br>
+                                Gudang: <?= $warehouse->nama ?><br>
+                                Stok saat ini: <strong><?= number_format($stock->qty) ?></strong> <?= $stock->nama_satuan ?>
+                            </div>
+
+                            <div class="form-group">
+                                <label><strong>Stok Baru</strong></label>
+                                <input type="number" name="qty" min="0" value="<?= $stock->qty ?>" class="form-control"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-<?php endforeach ?>
+    <?php endforeach ?>
 <?php endif ?>
+
+<script>
+    (function () {
+        var filterNama = document.getElementById('filterNama');
+        var filterStatus = document.getElementById('filterStatus');
+        if (!filterNama || !filterStatus) return;
+
+        function applyFilter() {
+            var nama = filterNama.value.toLowerCase();
+            var status = filterStatus.value;
+            var rows = document.querySelectorAll('#stokTable tbody tr');
+            rows.forEach(function (row) {
+                var matchNama = !nama || row.dataset.nama.indexOf(nama) !== -1;
+                var matchStatus = !status || row.dataset.status === status;
+                row.style.display = (matchNama && matchStatus) ? '' : 'none';
+            });
+        }
+
+        filterNama.addEventListener('input', applyFilter);
+        filterStatus.addEventListener('change', applyFilter);
+    })();
+</script>

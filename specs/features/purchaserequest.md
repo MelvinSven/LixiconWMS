@@ -27,7 +27,8 @@ External procurement workflow: when a Project Admin needs items the warehouse do
 
 See PRD for the authoritative list. Key points:
 
-1. PR status lifecycle: `Submitted` → `Accepted` / `Declined` → `Converted to PO`.
+1. PR status lifecycle: `menunggu` → accept → `disetujui` / reject → `ditolak`. After Project Admin verifies goods: `belum_selesai` (partial) or `selesai` (all matched).
+13. Per-item delivery state (`status_pengiriman`): a 3-step progress bar (Diproses → Dikirim → Sampai) is shown below the Daftar Barang table when PR is `disetujui`, `belum_selesai`, or `selesai`. Purchasing Admin and Admin can set each item to any state via buttons in the progress bar. The State Progress Bar is hidden for `menunggu`/`ditolak`. Default state is `diproses`.
 2. Admin can delete a PR in **any** status; staff can only delete PRs in `menunggu` or `ditolak`. The delete button appears in the Aksi column of the PR list next to the Detail button.
 3. PR is tagged with the requesting warehouse and Project Admin name (PR-02).
 4. PO status lifecycle: `Pending` → `Sent to Supplier` → `Shipped` → `Delivered` (PO-06).
@@ -53,6 +54,7 @@ See PRD for the authoritative list. Key points:
 | `POST /purchaserequest/store_verifikasi/(:num)` | `Purchaserequest::store_verifikasi` | staff (requester) |
 | `POST /purchaserequest/update_qty/(:num)` | `Purchaserequest::update_qty` | staff or purchasing_admin |
 | `POST /purchaserequest/delete/(:num)` | `Purchaserequest::delete` | staff (status `menunggu`/`ditolak` only) or admin (any status) |
+| `POST /purchaserequest/update_status_pengiriman/(:num)` | `Purchaserequest::update_status_pengiriman` | purchasing_admin, admin |
 
 ## Data touchpoints
 
@@ -65,6 +67,7 @@ See PRD for the authoritative list. Key points:
 - `migration_pr_manual_item.sql` makes `purchase_request_detail.id_barang` nullable and adds `nama_barang_manual` + `id_satuan_manual` for items input manually.
 - On Goods Receipt full-match: writes `barang_masuk` + `barang_masuk_detail` (reuses inbound flow) + updates `stok_gudang`.
 - **Stock counters:** only mutated at Goods Receipt verification (not at PR or PO creation).
+- `purchase_request_detail.status_pengiriman` ENUM(`diproses`,`dikirim`,`sampai`) DEFAULT `diproses` — added by `migration_pr_status_pengiriman.sql`, migrated to 3-step by `migration_delivery_state.sql`.
 
 ## Out of scope (for now)
 

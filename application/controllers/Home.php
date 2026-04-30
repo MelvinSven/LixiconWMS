@@ -17,7 +17,6 @@ class Home extends MY_Controller
         $is_login = $this->session->userdata('is_login');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }
@@ -63,6 +62,24 @@ class Home extends MY_Controller
         // Total barang (semua jenis barang)
         $total_barang = $this->db->count_all('barang');
 
+        // PR stats for purchasing_admin dashboard
+        $pr_menunggu      = $this->db->where('status', 'menunggu')->count_all_results('purchase_request');
+        $pr_disetujui     = $this->db->where('status', 'disetujui')->count_all_results('purchase_request');
+        $pr_selesai       = $this->db->where('status', 'selesai')->count_all_results('purchase_request');
+        $pr_belum_selesai = $this->db->where('status', 'belum_selesai')->count_all_results('purchase_request');
+
+        // 5 newest PRs for purchasing_admin dashboard table
+        if ($this->session->userdata('role') === 'purchasing_admin') {
+            $this->db->select('purchase_request.id, purchase_request.kode_pr, purchase_request.tanggal_pr, purchase_request.status, gudang.nama AS nama_gudang');
+            $this->db->from('purchase_request');
+            $this->db->join('gudang', 'purchase_request.id_gudang = gudang.id', 'left');
+            $this->db->order_by('purchase_request.tanggal_pr', 'DESC');
+            $this->db->limit(5);
+            $newest_prs = $this->db->get()->result();
+        } else {
+            $newest_prs = [];
+        }
+
         $data['title'] = 'Lixicon - Dashboard';
         $data['breadcrumb_title'] = "Hallo $nama 😊";
         $data['breadcrumb_path'] = 'Home / Dashboard';
@@ -76,6 +93,11 @@ class Home extends MY_Controller
         $data['jumlah_barang_masuk'] = $jumlah_barang_masuk;
         $data['jumlah_barang_keluar'] = $jumlah_barang_keluar;
         $data['total_barang'] = $total_barang;
+        $data['pr_menunggu']      = $pr_menunggu;
+        $data['pr_disetujui']     = $pr_disetujui;
+        $data['pr_selesai']       = $pr_selesai;
+        $data['pr_belum_selesai'] = $pr_belum_selesai;
+        $data['newest_prs']       = $newest_prs;
 
         // Recent activities - barang masuk
         $this->db->select([

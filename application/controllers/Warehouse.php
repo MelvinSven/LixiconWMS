@@ -17,7 +17,6 @@ class Warehouse extends MY_Controller
         $is_login = $this->session->userdata('is_login');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }
@@ -193,6 +192,72 @@ class Warehouse extends MY_Controller
         }
 
         redirect(base_url('warehouses'));
+    }
+
+    /**
+     * Update stok barang di gudang secara langsung (koreksi stok)
+     */
+    public function update_stock()
+    {
+        if (!$_POST) {
+            $this->session->set_flashdata('error', 'Akses tidak diizinkan');
+            redirect(base_url('warehouses'));
+            return;
+        }
+
+        $id_gudang = (int) $this->input->post('id_gudang');
+        $id_barang = (int) $this->input->post('id_barang');
+        $new_qty   = (int) $this->input->post('qty');
+
+        if ($new_qty < 0) {
+            $this->session->set_flashdata('error', 'Stok tidak boleh negatif');
+            redirect(base_url('warehouse/detail/' . $id_gudang));
+            return;
+        }
+
+        // Access control
+        $user_gudang = getUserGudangId();
+        if ($user_gudang !== null && (int) $user_gudang !== $id_gudang) {
+            $this->session->set_flashdata('error', 'Akses tidak diizinkan');
+            redirect(base_url('warehouses'));
+            return;
+        }
+
+        $existing = $this->stokgudang->getStokByGudangBarang($id_gudang, $id_barang);
+        $old_qty   = $existing ? (int) $existing->qty : 0;
+        $delta     = $new_qty - $old_qty;
+
+        $this->db->trans_start();
+
+        if ($existing) {
+            $this->db->where('id_gudang', $id_gudang)
+                     ->where('id_barang', $id_barang)
+                     ->update('stok_gudang', ['qty' => $new_qty]);
+        } else {
+            $this->db->insert('stok_gudang', [
+                'id_gudang' => $id_gudang,
+                'id_barang' => $id_barang,
+                'qty'       => $new_qty,
+            ]);
+        }
+
+        // Keep global barang.qty in sync
+        if ($delta !== 0) {
+            $this->db->set('qty', 'qty + ' . $delta, false)
+                     ->where('id', $id_barang)
+                     ->update('barang');
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status()) {
+            $this->session->set_flashdata('success', 'Stok barang berhasil diperbarui');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui stok barang');
+        }
+
+        $redirect_to = $this->input->post('redirect_to') ?: base_url('warehouse/detail/' . $id_gudang);
+        redirect($redirect_to);
     }
 
     /**

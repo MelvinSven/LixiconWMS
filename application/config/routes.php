@@ -71,6 +71,7 @@ $route['warehouses/search/(:num)'] = 'warehouses/search/$1';
 $route['warehouse/add'] = 'warehouse/add';
 $route['warehouse/update'] = 'warehouse/update';
 $route['warehouse/delete'] = 'warehouse/delete';
+$route['warehouse/update_stock'] = 'warehouse/update_stock';
 $route['items/warehouse/(:num)'] = 'items/warehouse/$1';
 $route['items/warehouse/(:num)/(:num)'] = 'items/warehouse/$1/$2';
 
@@ -115,4 +116,5 @@ $route['purchaserequest/verifikasi/(:num)'] = 'purchaserequest/verifikasi/$1';
 $route['purchaserequest/store_verifikasi/(:num)'] = 'purchaserequest/store_verifikasi/$1';
 $route['purchaserequest/update_qty/(:num)'] = 'purchaserequest/update_qty/$1';
 $route['purchaserequest/delete/(:num)'] = 'purchaserequest/delete/$1';
+$route['purchaserequest/update_status_pengiriman/(:num)'] = 'purchaserequest/update_status_pengiriman/$1';
 

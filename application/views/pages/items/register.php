@@ -40,28 +40,34 @@
                                     <option value="" disabled>Belum ada data satuan</option>
                                 <?php endif; ?>
                             </select>
-                            <small class="text-muted">Jika satuan belum ada, tambahkan di menu <a
-                                    href="<?= base_url('unit') ?>">Tambah Satuan</a></small>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Gudang Awal <span class="text-danger">*</span></label>
-                            <select name="id_gudang" class="form-control" required>
-                                <option value="">-- Pilih Gudang --</option>
-                                <?php
-                                $warehouses = getWarehouses();
-                                if (!empty($warehouses)):
-                                    foreach ($warehouses as $gudang): ?>
-                                        <option value="<?= $gudang->id ?>"><?= $gudang->nama ?></option>
-                                    <?php endforeach;
-                                else: ?>
-                                    <option value="" disabled>Belum ada data gudang</option>
-                                <?php endif; ?>
-                            </select>
-                            <small class="text-muted">Pilih gudang tempat barang ini akan disimpan pertama kali. Jika
-                                gudang belum ada, tambahkan di menu <a href="<?= base_url('warehouses') ?>">List
-                                    Gudang</a></small>
+                            <small class="text-muted">Barang akan disimpan di gudang Anda.</small>
+                            <?php if ($user_gudang_id !== null): ?>
+                                <input type="hidden" name="id_gudang" value="<?= $user_gudang_id ?>">
+                                <input type="text" class="form-control"
+                                    value="<?= htmlspecialchars(getWarehouseName($user_gudang_id)) ?>" readonly>
+
+                            <?php else: ?>
+                                <select name="id_gudang" class="form-control" required>
+                                    <option value="">-- Pilih Gudang --</option>
+                                    <?php
+                                    $warehouses = getWarehouses();
+                                    if (!empty($warehouses)):
+                                        foreach ($warehouses as $gudang): ?>
+                                            <option value="<?= $gudang->id ?>"><?= $gudang->nama ?></option>
+                                        <?php endforeach;
+                                    else: ?>
+                                        <option value="" disabled>Belum ada data gudang</option>
+                                    <?php endif; ?>
+                                </select>
+                                <small class="text-muted">Pilih gudang tempat barang ini akan disimpan pertama kali. Jika
+                                    gudang belum ada, tambahkan di menu <a href="<?= base_url('warehouses') ?>">List
+                                        Gudang</a></small>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -84,8 +90,7 @@
                                     <option value="" disabled>Belum ada data lokasi</option>
                                 <?php endif; ?>
                             </select>
-                            <small class="text-muted">Jika lokasi belum ada, tambahkan di menu <a
-                                    href="<?= base_url('locations') ?>">List Letak Barang</a></small>
+
                         </div>
                     </div>
                     <div class="col-md-6">

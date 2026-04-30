@@ -48,12 +48,6 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Tanggal Diperlukan</strong></td>
-                                        <td>:
-                                            <?= date('d F Y', strtotime($permintaan->tanggal_diperlukan)) ?>
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td><strong>Pemohon</strong></td>
                                         <td>:
                                             <?= $permintaan->nama_user ?? '-' ?>
@@ -251,11 +245,17 @@
                                 </div>
                             <?php endif; ?>
 
-                            <div class="mt-3">
+                            <div class="mt-3 d-flex flex-wrap" style="gap: 0.5rem;">
                                 <a href="<?= base_url('preorder/print_surat_jalan/' . $permintaan->id) ?>"
                                     class="btn btn-outline-primary" target="_blank">
                                     <i data-feather="printer" class="feather-sm me-1"></i> Cetak Surat Jalan
                                 </a>
+                                <?php if (!empty($surat_jalan->foto)): ?>
+                                    <a href="<?= base_url($surat_jalan->foto) ?>" target="_blank"
+                                        class="btn btn-outline-secondary" title="Lihat Foto Surat Jalan">
+                                        <i data-feather="image" class="feather-sm me-1"></i> Foto Surat Jalan
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

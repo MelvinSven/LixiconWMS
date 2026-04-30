@@ -42,10 +42,10 @@
 
                     <div class="form-group mb-4">
                         <label><strong>Foto Purchase Request</strong> <span
-                                class="text-muted font-weight-normal">(opsional, JPG/PNG, maks. 2 MB)</span></label>
+                                class="text-muted font-weight-normal">(JPG/PNG, maks. 2 MB)</span></label>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="foto_pr" name="foto_pr"
-                                accept="image/jpeg,image/png">
+                                accept="image/jpeg,image/png" required>
                             <label class="custom-file-label" for="foto_pr">Pilih gambar...</label>
                         </div>
                         <div id="fotoPreviewWrap" class="mt-2" style="display:none;">
@@ -58,59 +58,6 @@
                         <textarea name="keterangan" class="form-control" rows="2"
                             placeholder="Alasan pengadaan barang ini..."></textarea>
                     </div> -->
-
-                    <div class="card border">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <strong><i class="feather-sm me-1"></i>Daftar Barang</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th width="4%" class="text-center">
-                                                <input type="checkbox" id="checkAll" title="Pilih Semua">
-                                            </th>
-                                            <th width="4%">No</th>
-                                            <th width="30%">Nama Barang</th>
-                                            <th width="10%">Satuan</th>
-                                            <th width="10%">Qty</th>
-                                            <th width="23%">Keterangan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbodyItems">
-                                        <?php if (empty($items)): ?>
-                                            <tr>
-                                                <td colspan="6" class="text-center text-muted py-3">Belum ada barang di
-                                                    katalog.</td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <?php foreach ($items as $i => $it): ?>
-                                                <tr>
-                                                    <td class="text-center">
-                                                        <input type="checkbox" class="item-check" data-id="<?= $it->id ?>">
-                                                    </td>
-                                                    <td><?= $i + 1 ?></td>
-                                                    <td><?= htmlspecialchars($it->nama) ?></td>
-                                                    <td><?= htmlspecialchars($it->nama_satuan ?? '-') ?></td>
-                                                    <td>
-                                                        <input type="number" class="form-control qty-input" min="1"
-                                                            placeholder="0" disabled>
-                                                        <input type="hidden" class="hidden-id" disabled>
-                                                        <input type="hidden" class="hidden-qty" disabled>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" class="form-control keterangan-input"
-                                                            name="keterangan_barang[]" placeholder="Catatan..." disabled>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="card border mt-3">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -179,6 +126,59 @@
                             </td>
                         </tr>
                     </template>
+
+                    <div class="card border">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <strong><i class="feather-sm me-1"></i>Daftar Barang</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="4%" class="text-center">
+                                                <input type="checkbox" id="checkAll" title="Pilih Semua">
+                                            </th>
+                                            <th width="4%">No</th>
+                                            <th width="30%">Nama Barang</th>
+                                            <th width="10%">Satuan</th>
+                                            <th width="10%">Qty</th>
+                                            <th width="23%">Keterangan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyItems">
+                                        <?php if (empty($items)): ?>
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted py-3">Belum ada barang di
+                                                    katalog.</td>
+                                            </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($items as $i => $it): ?>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" class="item-check" data-id="<?= $it->id ?>">
+                                                    </td>
+                                                    <td><?= $i + 1 ?></td>
+                                                    <td><?= htmlspecialchars($it->nama) ?></td>
+                                                    <td><?= htmlspecialchars($it->nama_satuan ?? '-') ?></td>
+                                                    <td>
+                                                        <input type="number" class="form-control qty-input" min="1"
+                                                            placeholder="0" disabled>
+                                                        <input type="hidden" class="hidden-id" disabled>
+                                                        <input type="hidden" class="hidden-qty" disabled>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control keterangan-input"
+                                                            name="keterangan_barang[]" placeholder="Catatan..." disabled>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="mt-4 text-end">
                         <button type="submit" class="btn btn-primary btn-lg" id="btnSubmit" disabled>

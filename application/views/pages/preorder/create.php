@@ -25,15 +25,8 @@
                             <div class="form-group">
                                 <label><strong>Tanggal Permintaan</strong></label>
                                 <input type="date" name="tanggal_permintaan" id="tanggal_permintaan"
-                                    class="form-control" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>"
+                                    class="form-control" value="<?= date('Y-m-d') ?>"
                                     required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Tanggal Diperlukan</strong></label>
-                                <input type="date" name="tanggal_diperlukan" id="tanggal_diperlukan"
-                                    class="form-control" min="<?= date('Y-m-d') ?>" required>
                             </div>
                         </div>
                     </div>
@@ -330,25 +323,7 @@
             btnSubmit.disabled = !hasValid || !gudangAsal.value;
         }
 
-        // Date validation - set min to today
-        const today = new Date().toISOString().split('T')[0];
         const tglPermintaan = document.getElementById('tanggal_permintaan');
-        const tglDiperlukan = document.getElementById('tanggal_diperlukan');
-
-        // Enforce min on change as extra safety
-        tglPermintaan.addEventListener('change', function () {
-            if (this.value < today) {
-                this.value = today;
-                alert('Tanggal Permintaan tidak boleh sebelum hari ini.');
-            }
-        });
-
-        tglDiperlukan.addEventListener('change', function () {
-            if (this.value < today) {
-                this.value = today;
-                alert('Tanggal Diperlukan tidak boleh sebelum hari ini.');
-            }
-        });
 
         // Form validation
         document.getElementById('formPermintaan').addEventListener('submit', function (e) {
@@ -366,20 +341,6 @@
                 alert('Pilih gudang tujuan!');
                 return false;
             }
-            // Validate dates are not in the past
-            if (tglPermintaan.value < today) {
-                e.preventDefault();
-                alert('Tanggal Permintaan tidak boleh sebelum hari ini.');
-                tglPermintaan.focus();
-                return false;
-            }
-            if (tglDiperlukan.value < today) {
-                e.preventDefault();
-                alert('Tanggal Diperlukan tidak boleh sebelum hari ini.');
-                tglDiperlukan.focus();
-                return false;
-            }
-
             const checkedBoxes = tbodyItems.querySelectorAll('.item-check:checked');
             if (checkedBoxes.length === 0) {
                 e.preventDefault();

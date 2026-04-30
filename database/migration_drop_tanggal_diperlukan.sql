@@ -1,5 +1,5 @@
--- Migration: Remove tanggal_diperlukan from purchase_request
+-- Migration: Remove tanggal_diperlukan from permintaan_barang
 -- Run this on existing databases that already have the column.
 
-ALTER TABLE `purchase_request`
+ALTER TABLE `permintaan_barang`
   DROP COLUMN `tanggal_diperlukan`;

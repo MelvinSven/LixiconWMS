@@ -11316,7 +11316,7 @@ a.text-purple:focus {
 	}
 
 	abbr[title]::after {
-		content: " ("attr(title) ")";
+		content: " (" attr(title) ")";
 	}
 
 	pre {

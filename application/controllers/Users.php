@@ -14,7 +14,6 @@ class Users extends MY_Controller
         $is_login = $this->session->userdata('is_login');
 
         if (!$is_login) {
-            $this->session->set_flashdata('warning', 'Anda belum login');
             redirect(base_url('login'));
             return;
         }
@@ -24,9 +23,9 @@ class Users extends MY_Controller
     {
         $this->session->unset_userdata('keyword');
 
-        $data['title'] = 'Lixicon - List Staff';
-        $data['breadcrumb_title'] = 'List Staff';
-        $data['breadcrumb_path'] = 'Manajemen Staff / List Staff';
+        $data['title'] = 'Lixicon - Daftar Staff';
+        $data['breadcrumb_title'] = 'Daftar Staff';
+        $data['breadcrumb_path'] = 'Manajemen Staff / Daftar Staff';
         $data['total_rows'] = $this->users->count();
 
         $this->db->select('user.*, gudang.nama AS nama_gudang');

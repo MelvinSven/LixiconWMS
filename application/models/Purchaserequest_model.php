@@ -250,6 +250,15 @@ class Purchaserequest_model extends MY_Model
     }
 
     /**
+     * Update per-item delivery status (Purchasing Admin / Admin only).
+     */
+    public function updateStatusPengiriman($id_detail, $status)
+    {
+        return $this->db->where('id', $id_detail)
+            ->update('purchase_request_detail', ['status_pengiriman' => $status]);
+    }
+
+    /**
      * Ringkasan status verifikasi per item pada sebuah PR.
      * return: ['total', 'sesuai', 'belum_sesuai', 'belum_diverifikasi']
      */

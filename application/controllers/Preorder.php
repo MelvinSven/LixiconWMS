@@ -123,7 +123,6 @@ class Preorder extends MY_Controller
         $user_gudang_id = getUserGudangId();
 
         $this->form_validation->set_rules('tanggal_permintaan', 'Tanggal Permintaan', 'required');
-        $this->form_validation->set_rules('tanggal_diperlukan', 'Tanggal Diperlukan', 'required');
         $this->form_validation->set_rules('id_gudang_asal', 'Gudang Asal', 'required|numeric');
         $this->form_validation->set_rules('id_gudang_tujuan', 'Gudang Tujuan', 'required|numeric');
         $this->form_validation->set_rules('id_barang[]', 'Barang', 'required');
@@ -170,7 +169,6 @@ class Preorder extends MY_Controller
             'id_gudang_asal' => $id_gudang_asal,
             'id_gudang_tujuan' => $id_gudang_tujuan,
             'tanggal_permintaan' => $this->input->post('tanggal_permintaan'),
-            'tanggal_diperlukan' => $this->input->post('tanggal_diperlukan'),
             'keterangan' => $this->input->post('keterangan'),
             'status' => 'menunggu'
         ];
@@ -335,10 +333,30 @@ class Preorder extends MY_Controller
             ];
         }
 
+        $foto = null;
+        if (!empty($_FILES['foto_surat_jalan']['name'])) {
+            $upload_path = './uploads/surat_jalan/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0777, true);
+            }
+            $config['upload_path']   = $upload_path;
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE;
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('foto_surat_jalan')) {
+                $foto = 'uploads/surat_jalan/' . $this->upload->data('file_name');
+            } else {
+                $this->session->set_flashdata('error', $this->upload->display_errors('', ''));
+                return redirect('preorder/surat_jalan/' . $id);
+            }
+        }
+
         $data = [
-            'id_permintaan' => $id,
+            'id_permintaan'    => $id,
             'nomor_pengiriman' => $this->input->post('nomor_pengiriman'),
-            'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman')
+            'tanggal_pengiriman' => $this->input->post('tanggal_pengiriman'),
+            'foto'             => $foto
         ];
 
         $result = $this->suratJalanModel->createSuratJalan($data, $items);

@@ -10,38 +10,48 @@ Lixicon Warehouse Management System (WMS) adalah aplikasi web untuk mengelola in
 
 ## 2. User Roles & Access Control
 
-Terdapat 2 role utama:
+Terdapat 3 role:
 
-| Fitur | Admin | Staff |
-|-------|:-----:|:-----:|
-| Login / Logout | ✅ | ✅ |
-| Dashboard | ✅ (semua gudang) | ✅ (gudang sendiri) |
-| Register Barang (tambah item baru) | ✅ | ❌ |
-| List/Lihat Barang | ✅ | ✅ |
-| Edit/Hapus Barang | ✅ | ❌ |
-| Tambah/Edit/Hapus Satuan | ✅ | ❌ |
-| Tambah/Edit/Hapus Kategori | ✅ | ❌ |
-| Tambah/Edit/Hapus Letak Barang | ✅ | ❌ |
-| Tambah/Edit/Hapus Supplier | ✅ | ❌ |
-| Tambah/Edit/Hapus Gudang | ✅ | ❌ |
-| Lihat Gudang & Detail Stok | ✅ (semua) | ✅ (gudang sendiri) |
-| Barang Masuk (Keranjang + Checkout) | ✅ | ✅ |
-| Barang Keluar (Keranjang + Checkout) | ✅ | ✅ |
-| Hapus Catatan Masuk/Keluar | ✅ | ❌ |
-| Transfer/Pemindahan Antar-Gudang | ✅ | ✅ |
-| Hapus Transfer | ✅ | ❌ |
-| Update Status Transfer (Sampai) | ✅ / Pembuat | ✅ (pembuat saja) |
-| Buat Permintaan Barang (Preorder) | ❌ | ✅ |
-| Approve/Tolak Permintaan | ✅ | ❌ |
-| Buat Surat Jalan | ✅ | ✅ |
-| Tandai Pengiriman (Kirim) | ✅ | ❌ |
-| Verifikasi Penerimaan | ✅ | ✅ |
-| Hapus Permintaan | ✅ | ❌ |
-| Register Staff Baru | ✅ | ❌ |
-| List/Edit Staff | ✅ | ❌ |
-| Edit Profil Sendiri | ✅ | ✅ |
+| DB `role` | Persona (PRD) | Deskripsi |
+|---|---|---|
+| `admin` | Super-admin | Akses penuh ke semua fitur dan semua gudang. Satu-satunya role yang bisa register user baru. |
+| `staff` | Project Admin | Buat Purchase Request dan Preorder; operasi barang masuk/keluar/transfer; akses semua gudang (sejak migration `migration_staff_all_warehouses.sql` yang men-set `id_gudang = NULL`). |
+| `purchasing_admin` | Purchasing Admin | Kelola Purchase Request → Purchase Order → Goods Receipt. **Tidak** bisa akses barang masuk/keluar/transfer/preorder. |
 
-**Catatan:** Staff yang login secara default hanya melihat data yang terkait dengan gudang yang ditugaskan kepadanya (melalui field `id_gudang` di tabel `user`).
+> **Mapping penting:** `admin` di DB ≠ "Project Admin" di PRD. Ketika PRD menyebut "Project Admin", role DB-nya adalah `staff`.
+
+| Fitur | admin | staff | purchasing_admin |
+|-------|:-----:|:-----:|:----------------:|
+| Login / Logout | ✅ | ✅ | ✅ |
+| Dashboard | ✅ | ✅ | ✅ |
+| Register Barang | ✅ | ❌ | ❌ |
+| List/Lihat Barang | ✅ | ✅ | ✅ |
+| Edit/Hapus Barang | ✅ | ❌ | ❌ |
+| Tambah/Edit/Hapus Satuan | ✅ | ❌ | ❌ |
+| Tambah/Edit/Hapus Gudang | ✅ | ❌ | ❌ |
+| Lihat Gudang & Detail Stok | ✅ | ✅ | ✅ |
+| Barang Masuk (Keranjang + Checkout) | ✅ | ✅ | ❌ |
+| Barang Keluar (Keranjang + Checkout) | ✅ | ✅ | ❌ |
+| Hapus Catatan Masuk/Keluar | ✅ | ❌ | ❌ |
+| Transfer/Pemindahan Antar-Gudang | ✅ | ✅ | ❌ |
+| Hapus Transfer | ✅ | ❌ | ❌ |
+| Update Status Transfer (Sampai) | ✅ / Pembuat | ✅ (pembuat saja) | ❌ |
+| Buat Permintaan Barang (Preorder) | ❌ | ✅ | ❌ |
+| Approve/Tolak Permintaan (Preorder) | ✅ | ❌ | ❌ |
+| Buat Surat Jalan (Preorder) | ✅ | ✅ | ❌ |
+| Tandai Kirim (Preorder) | ✅ | ❌ | ❌ |
+| Verifikasi Penerimaan (Preorder) | ✅ | ✅ | ❌ |
+| Hapus Permintaan (Preorder) | ✅ | ❌ | ❌ |
+| Buat Purchase Request (PR) | ❌ | ✅ | ✅ (lihat saja) |
+| Accept/Decline PR | ❌ | ❌ | ✅ |
+| Buat Purchase Order (PO) | ❌ | ❌ | ✅ |
+| Goods Receipt / Verifikasi PR | ❌ | ✅ (pemohon) | ❌ |
+| Hapus PR | ✅ (status apapun) | ✅ (menunggu/ditolak) | ❌ |
+| Register Staff Baru | ✅ | ❌ | ❌ |
+| List/Edit Staff | ✅ | ❌ | ❌ |
+| Edit Profil Sendiri | ✅ | ✅ | ✅ |
+
+**Catatan:** `staff` sebelumnya terikat ke satu gudang via `id_gudang`. Sejak `migration_staff_all_warehouses.sql` (2026-04-06), `id_gudang` di-set `NULL` untuk semua staff — artinya staff kini bisa akses semua gudang. Sidebar tetap menyembunyikan menu `purchasing_admin`-only dan sebaliknya.
 
 ---
 
@@ -95,14 +105,16 @@ Dashboard menampilkan ringkasan statistik dan aktivitas terbaru:
 
 ### 5.1 Register Barang (`/items/register`) — Admin only
 - Mendaftarkan barang baru ke sistem
-- Field: **Nama Barang**, **Satuan** (dropdown), **Supplier** (dropdown), **Gambar** (upload, opsional)
+- Field: **Nama Barang**, **Satuan** (dropdown), **Lokasi** (dropdown), **Gambar** (upload, opsional)
+- Field `id_supplier` dan `kode_barang` sudah dihapus dari tabel `barang` (lihat `migration_remove_supplier_from_barang.sql` dan `migration_remove_kode_barang.sql`)
 - Gambar disimpan di folder `uploads/items/`, jika tidak diupload menggunakan `default.png`
 - Qty awal otomatis 0 (stok ditambah melalui proses barang masuk)
 
 ### 5.2 List Barang (`/items`)
-- Menampilkan semua barang dengan informasi: Nama, Satuan, Supplier, Qty, Gambar
+- Menampilkan semua barang dengan informasi: Nama, Satuan, Lokasi, Qty, Gambar
+- Qty ditampilkan dari `SUM(stok_gudang.qty)` — bukan dari `barang.qty` langsung
 - **Paginasi** — data ditampilkan per halaman
-- **Pencarian** — cari berdasarkan nama, kode, atau supplier
+- **Pencarian** — cari berdasarkan nama atau satuan
 - **Filter** yang tersedia:
   - Berdasarkan **Satuan** — klik link satuan untuk melihat barang dengan satuan tertentu
   - Berdasarkan **Ketersediaan** — available (qty > 0) atau empty (qty = 0)
@@ -405,10 +417,10 @@ Status permintaan: `menunggu` → `disetujui` → `surat_jalan` → `dikirim` �
 
 | Tabel | Keterangan |
 |-------|------------|
-| `user` | Data pengguna (admin/staff) — id, nama, email, password, telefon, ktp, role, status, id_gudang |
-| `supplier` | Data supplier — id_supplier, nama |
+| `user` | Data pengguna — id, nama, email, password, telefon, ktp, role (`admin`/`staff`/`purchasing_admin`), status, id_gudang (NULL = semua gudang) |
+| `supplier` | Data supplier — id_supplier, nama. Digunakan oleh Purchase Order, tidak lagi terikat ke `barang`. |
 | `satuan` | Satuan barang — id, nama, status |
-| `barang` | Data master barang — id, id_supplier, nama, qty, id_satuan, image |
+| `barang` | Data master barang — id, nama, qty, id_satuan, id_lokasi, image. Kolom `id_supplier` dan `kode_barang` sudah dihapus. |
 | `gudang` | Data gudang — id, nama, alamat |
 | `stok_gudang` | Stok barang per gudang — id, id_gudang, id_barang, qty |
 
@@ -439,54 +451,117 @@ Status permintaan: `menunggu` → `disetujui` → `surat_jalan` → `dikirim` �
 
 | Tabel | Keterangan |
 |-------|------------|
-| `permintaan_barang` | Header permintaan — id, kode_permintaan, id_user, id_gudang_asal, id_gudang_tujuan, tanggal_permintaan, tanggal_diperlukan, status, keterangan, alasan_tolak |
+| `permintaan_barang` | Header permintaan — id, kode_permintaan, id_user, id_gudang_asal, id_gudang_tujuan, tanggal_permintaan, status, keterangan, alasan_tolak |
 | `permintaan_barang_detail` | Detail barang yang diminta — id, id_permintaan, id_barang, qty, keterangan |
 | `surat_jalan` | Header surat jalan — id, id_permintaan, nomor_pengiriman, tanggal_pengiriman |
 | `surat_jalan_detail` | Detail surat jalan — id, id_surat_jalan, id_barang, qty, qty_diterima, keterangan, is_sesuai, keterangan_verifikasi |
 
-### 16.6 Database Triggers
+### 16.6 Tabel Purchase Request & Purchase Order
+
+| Tabel | Keterangan |
+|-------|------------|
+| `purchase_request` | Header PR — id, kode_pr, id_user, id_gudang, tanggal_pr, keterangan, status (`menunggu`/`disetujui`/`ditolak`/`diproses`/`selesai`/`belum_selesai`), alasan_tolak, id_user_respon, tanggal_respon, foto_pr |
+| `purchase_request_detail` | Detail item PR — id, id_pr, id_barang (nullable untuk manual item), qty, keterangan, nama_barang_manual, id_satuan_manual |
+| `purchase_order` | Header PO — id, kode_po, id_pr, id_supplier, id_user, tanggal_po, tanggal_estimasi, total_harga, keterangan, file_po, status (`dibuat`/`diterima`/`selesai`/`belum_selesai`) |
+| `purchase_order_detail` | Detail item PO — id, id_po, id_barang, qty, harga_satuan, subtotal |
+| `surat_jalan_pr` | Upload Surat Jalan per PR — id, id_pr, nama_file, file_path, uploaded_at. Multiple per PR, tidak pernah di-overwrite. |
+
+**Catatan:** `purchase_request_detail.id_barang` bisa NULL untuk **manual item** (item belum ada di katalog). Saat verifikasi dengan `qty_diterima > 0`, manual item dipromosikan ke tabel `barang` dan `id_barang` di-update.
+
+### 16.7 Database Triggers
 
 | Trigger | Tabel | Aksi |
 |---------|-------|------|
 | `tambah_barang` | `barang_masuk_detail` (AFTER INSERT) | Otomatis menambah `barang.qty` sesuai qty yang dimasukkan |
 | `kurangi_barang` | `barang_keluar_detail` (BEFORE INSERT) | Otomatis mengurangi `barang.qty` sesuai qty yang dikeluarkan |
 
-**Catatan:** Untuk transfer dan preorder, update stok dilakukan manual via kode PHP (tidak menggunakan trigger), karena stok yang diperbarui ada di tabel `stok_gudang` per-gudang, bukan di tabel `barang` global.
+**Catatan:** Untuk transfer, preorder, dan Purchase Request Goods Receipt, update stok dilakukan manual via kode PHP (tidak menggunakan trigger), karena stok yang diperbarui ada di tabel `stok_gudang` per-gudang, bukan di tabel `barang` global.
+
+---
+
+## 15b. Purchase Request (PR) → Purchase Order (PO) → Goods Receipt
+
+Fitur pengadaan eksternal: staff meminta barang ke supplier melalui Purchasing Admin.
+
+### Alur (Lifecycle)
+
+```
+Staff buat PR → Purchasing Admin accept/decline → (Declined: staff bisa delete)
+              → Purchasing Admin buat PO → PO status: Pending → Sent → Shipped → Delivered
+              → Staff verifikasi Goods Receipt → Full Match (selesai) / Partial (belum_selesai)
+```
+
+Status PR: `menunggu` → `disetujui` / `ditolak` → `diproses` → `selesai` / `belum_selesai`
+
+### 15b.1 Buat PR (`/purchaserequest/create`) — Staff only
+- Field: **Gudang Tujuan** (otomatis dari id_gudang staff), **Tanggal PR**, **Keterangan**, **Foto PR** (upload JPG/PNG, opsional)
+- Tambah item: pilih barang dari katalog (atau input manual jika barang belum ada di sistem)
+- Kode PR digenerate otomatis: `PR-YYYYMMDD-XXX`
+- **Manual item:** isi Nama Barang + Satuan tanpa memilih dari dropdown `barang`. Disimpan di `purchase_request_detail` dengan `id_barang = NULL`, `nama_barang_manual`, `id_satuan_manual`.
+
+### 15b.2 Daftar PR (`/purchaserequest`) — semua role
+- Informasi: kode PR, pemohon, gudang, tanggal, status, aksi
+- Tombol **Hapus** muncul di kolom Aksi:
+  - Admin: status apapun
+  - Staff (pemohon): hanya status `menunggu` atau `ditolak`
+
+### 15b.3 Detail PR (`/purchaserequest/detail/{id}`)
+- Informasi lengkap PR, daftar item, foto PR, list Surat Jalan yang diupload
+- Tombol aksi sesuai status dan role:
+  - `menunggu` → Accept / Decline (purchasing_admin)
+  - `disetujui` → Buat PO (purchasing_admin) — belum diimplementasikan penuh
+  - `diproses` → Verifikasi (staff pemohon)
+
+### 15b.4 Accept/Decline (`/purchaserequest/accept/{id}`, `/purchaserequest/reject/{id}`) — Purchasing Admin only
+- Accept: status `menunggu` → `disetujui`
+- Decline: wajib isi alasan penolakan; status → `ditolak`
+
+### 15b.5 Verifikasi / Goods Receipt (`/purchaserequest/verifikasi/{id}`) — Staff pemohon
+- Form per item: **Qty Diterima**, **Keterangan** (catatan ketidaksesuaian)
+- Upload **Surat Jalan PDF** (opsional, max 10 MB) — disimpan ke `uploads/surat_jalan/` dan dicatat di `surat_jalan_pr`. Multiple upload didukung; file lama tidak dihapus.
+- Hasil:
+  - Semua item `qty_diterima = qty` → status `selesai`; stok ditambahkan via `barang_masuk` + `barang_masuk_detail` (trigger `tambah_barang` aktif) + update `stok_gudang`
+  - Ada item `qty_diterima < qty` → status `belum_selesai`
+  - Manual item dengan `qty_diterima > 0` → dipromosikan ke tabel `barang` (insert baru) + `stok_gudang` di-update
+
+### 15b.6 Hapus PR (`/purchaserequest/delete/{id}`)
+- Menghapus PR beserta detail-nya (cascade)
 
 ---
 
 ## 17. Navigasi Sidebar
 
-Menu sidebar tersusun dalam kelompok-kelompok berikut:
+Menu sidebar tersusun dalam kelompok-kelompok berikut (gating per role):
 
-1. **Dashboard** — halaman utama
+1. **Dashboard** — semua role
 2. **Manajemen Barang**
-   - Register Barang (admin only)
-   - List Barang
+   - Register Barang (disembunyikan untuk `purchasing_admin`)
+   - Daftar Barang
    - Tambah Satuan (admin only)
-   - List Satuan
-   - Tambah Kategori (admin only)
-   - List Kategori
-   - List Letak Barang
-3. **Manajemen Supplier**
-   - List Supplier
-4. **Manajemen Gudang**
+   - Daftar Satuan
+   - ~~Tambah/List Kategori~~ — dikomentari di sidebar, tidak aktif
+   - ~~List Letak Barang~~ — dikomentari di sidebar, tidak aktif
+3. ~~**Manajemen Supplier**~~ — dikomentari di sidebar, tidak aktif
+4. **Manajemen Gudang** — semua role
    - Gudang (list + tambah + detail)
-5. **Barang Masuk**
+5. **Barang Masuk** — disembunyikan untuk `purchasing_admin`
    - Barang Masuk (keranjang)
    - Catatan Masuk (riwayat)
-6. **Barang Keluar**
+6. **Barang Keluar** — disembunyikan untuk `purchasing_admin`
    - Barang Keluar (keranjang)
    - Catatan Keluar (riwayat)
-7. **Pemindahan Barang**
+7. **Pemindahan Barang** — disembunyikan untuk `purchasing_admin`
    - Pemindahan Barang (buat baru)
    - Riwayat Pemindahan
-8. **Permintaan Barang (Preorder)**
+8. **Permintaan Barang (Preorder)** — disembunyikan untuk `purchasing_admin`
    - Buat Permintaan (staff only)
    - Daftar Permintaan
-9. **Manajemen Staff**
-   - List Staff
-   - Register Staff (admin only)
+9. **Purchasing**
+   - Buat Purchase Request (staff only)
+   - Purchase Requests (semua role)
+10. **Manajemen Staff**
+    - Daftar Staff
+    - Register Staff (admin only)
 
 ---
 
@@ -561,6 +636,15 @@ Menu sidebar tersusun dalam kelompok-kelompok berikut:
 | `/users` | List staff |
 | `/register` | Register staff baru |
 | `/user` | Profil sendiri |
+| `/purchaserequest` | Daftar Purchase Request |
+| `/purchaserequest/create` | Buat PR baru (staff) |
+| `/purchaserequest/detail/{id}` | Detail PR |
+| `/purchaserequest/accept/{id}` | Terima PR (purchasing_admin) |
+| `/purchaserequest/reject/{id}` | Tolak PR dengan alasan (purchasing_admin) |
+| `/purchaserequest/verifikasi/{id}` | Form Goods Receipt (staff pemohon) |
+| `/purchaserequest/store_verifikasi/{id}` | Simpan hasil verifikasi |
+| `/purchaserequest/update_qty/{id}` | Update qty item PR |
+| `/purchaserequest/delete/{id}` | Hapus PR |
 
 ---
 
@@ -586,5 +670,11 @@ Menu sidebar tersusun dalam kelompok-kelompok berikut:
 | **Sesuai** | Barang diterima sesuai qty surat jalan |
 | **Tidak Sesuai** | Barang diterima tidak sesuai (qty berbeda, rusak, dll) |
 | **Belum Selesai** | Status permintaan jika ada barang yang tidak sesuai |
-| **Admin** | Super user yang dapat mengelola semua fitur |
-| **Staff** | User dengan akses terbatas, terikat pada gudang tertentu |
+| **Admin** | Super user (`role='admin'`) yang dapat mengelola semua fitur |
+| **Staff** | Project Admin (`role='staff'`) — buat PR & Preorder, operasi stok di semua gudang |
+| **Purchasing Admin** | `role='purchasing_admin'` — accept/reject PR, buat PO, kelola supplier |
+| **Purchase Request (PR)** | Permintaan pengadaan barang dari supplier, dibuat oleh staff |
+| **Purchase Order (PO)** | Pesanan resmi ke supplier, dibuat oleh Purchasing Admin dari PR yang disetujui |
+| **Goods Receipt** | Proses verifikasi barang yang diterima dari supplier; menambah stok jika sesuai |
+| **Manual Item** | Item PR yang belum ada di katalog `barang`; dipromosikan ke katalog saat verifikasi jika qty > 0 |
+| **Surat Jalan PR** | PDF dokumen pengiriman supplier yang diupload saat Goods Receipt; multiple per PR |

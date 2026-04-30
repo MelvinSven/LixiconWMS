@@ -16,29 +16,21 @@
                     <!-- Search Form -->
                     <form action="<?= base_url('items/search') ?>" method="POST" class="mb-4">
                         <div class="row">
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-4 mb-2">
                                 <label><strong>Nama Barang</strong></label>
                                 <input type="text" name="nama_barang" class="form-control"
                                     placeholder="Cari nama barang..."
                                     value="<?= isset($search_params['nama_barang']) ? $search_params['nama_barang'] : '' ?>">
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <label><strong>Letak Barang</strong></label>
-                                <select name="lokasi" class="form-control">
-                                    <option value="">-- Semua Lokasi --</option>
-                                    <?php foreach (getLocations() as $lokasi): ?>
-                                        <option value="<?= $lokasi->id_lokasi ?>" <?= (isset($search_params['lokasi']) && $search_params['lokasi'] == $lokasi->id_lokasi) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($lokasi->nama_lokasi) ?>
-                                        </option>
-                                    <?php endforeach ?>
+                            <div class="col-md-4 mb-2">
+                                <label><strong>Status</strong></label>
+                                <select name="status" class="form-control">
+                                    <option value="">-- Semua Status --</option>
+                                    <option value="tersedia" <?= (isset($search_params['status']) && $search_params['status'] == 'tersedia') ? 'selected' : '' ?>>Tersedia</option>
+                                    <option value="kosong" <?= (isset($search_params['status']) && $search_params['status'] == 'kosong') ? 'selected' : '' ?>>Kosong</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 mb-2">
-                                <label><strong>Deskripsi</strong></label>
-                                <input type="text" name="deskripsi" class="form-control" placeholder="Cari deskripsi..."
-                                    value="<?= isset($search_params['deskripsi']) ? $search_params['deskripsi'] : '' ?>">
-                            </div>
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-4 mb-2">
                                 <label>&nbsp;</label>
                                 <div>
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i>
@@ -97,10 +89,19 @@
                                                     title="Lihat Gambar">
                                                     <i class="fas fa-image"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-info btn-sm rounded-lg" data-toggle="modal"
-                                                    data-target="#stokGudangModal<?= $row->id_barang ?>">
-                                                    <i class="fas fa-warehouse"></i>
-                                                </button>
+                                                <?php if (!empty($is_staff)): ?>
+                                                    <button type="button" class="btn btn-success btn-sm rounded-lg"
+                                                        data-toggle="modal" data-target="#updateStokModal<?= $row->id_barang ?>"
+                                                        title="Update Stok">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn btn-info btn-sm rounded-lg" data-toggle="modal"
+                                                        data-target="#stokGudangModal<?= $row->id_barang ?>"
+                                                        title="Lihat Stok per Gudang">
+                                                        <i class="fas fa-warehouse"></i>
+                                                    </button>
+                                                <?php endif ?>
                                                 <?php if ($this->session->userdata('role') == 'admin'): ?>
                                                     <button class="btn btn-warning btn-sm rounded-lg" data-toggle="modal"
                                                         data-target="#editModal<?= $row->id_barang ?>">
@@ -151,6 +152,44 @@ $cachedLocations = getLocations();
         ? base_url($imgPath)
         : $defaultImg;
     ?>
+
+    <?php if (!empty($is_staff)): ?>
+    <!-- Modal Update Stok (Staff) -->
+    <div class="modal fade" id="updateStokModal<?= $row->id_barang ?>" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-edit mr-2"></i>Update Stok Barang</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <form action="<?= base_url('warehouse/update_stock') ?>" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="id_barang" value="<?= $row->id_barang ?>">
+                        <input type="hidden" name="id_gudang" value="<?= $user_gudang_id ?>">
+                        <input type="hidden" name="redirect_to" value="<?= current_url() ?>">
+
+                        <div class="alert alert-info">
+                            <strong><?= htmlspecialchars($row->nama_barang) ?></strong><br>
+                            Gudang: <?= getWarehouseName($user_gudang_id) ?><br>
+                            Stok saat ini: <strong><?= number_format($row->qty) ?></strong> <?= $row->nama_satuan ?>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label><strong>Stok Baru</strong></label>
+                            <input type="number" name="qty" min="0" value="<?= $row->qty ?>" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <?php endif ?>
 
     <!-- Modal Lihat Gambar -->
     <div class="modal fade" id="imageModal<?= $row->id_barang ?>" tabindex="-1" role="dialog">

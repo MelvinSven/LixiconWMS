@@ -19,7 +19,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="<?= base_url('preorder/store_surat_jalan/' . $permintaan->id) ?>" method="POST">
+                <form action="<?= base_url('preorder/store_surat_jalan/' . $permintaan->id) ?>" method="POST" enctype="multipart/form-data">
                     <!-- Info Surat Jalan -->
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -34,6 +34,14 @@
                                 <label><strong>Tanggal Pengiriman</strong></label>
                                 <input type="date" name="tanggal_pengiriman" class="form-control"
                                     value="<?= date('Y-m-d') ?>" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label><strong>Foto Surat Jalan <span class="text-muted font-weight-normal">(Opsional)</span></strong></label>
+                                <input type="file" name="foto_surat_jalan" id="foto_surat_jalan"
+                                    class="form-control-file" accept="image/jpeg,image/png">
+                                <small class="text-muted">Format: JPG, PNG. Maks 2MB.</small>
                             </div>
                         </div>
                     </div>

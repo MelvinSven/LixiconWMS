@@ -18,10 +18,12 @@ The master catalog of `barang` (items) the WMS tracks, along with their `satuan`
 
 1. `/items/register` creates a new `barang` row with optional image upload to `uploads/items/<hash>.<ext>`.
 2. `/items` lists items with pagination (`/items/(:num)`) and shows `qty` from `barang`.
-3. `/items/warehouse/(:num)` shows stock filtered to one warehouse (joined with `stok_gudang`).
-4. Deleting an item must also remove orphaned rows from `stok_gudang` (regression fixed in commit `15434bb`).
-5. Units are managed at `/unit` (admin) and listed at `/units`.
-6. Locations are managed at `/locations` with search at `/locations/search`.
+3. For `role='staff'`: `/items`, `/items/unit/:id`, `/items/availability/:param`, and `/items/search` all INNER JOIN `stok_gudang` scoped to the user's `id_gudang` — only items present in their warehouse are shown, and qty displayed is the warehouse-specific qty (not the global sum).
+4. For `role='admin'` and `role='purchasing_admin'`: the full unfiltered catalog is shown with global qty.
+5. `/items/warehouse/(:num)` shows stock filtered to one warehouse (joined with `stok_gudang`).
+6. Deleting an item must also remove orphaned rows from `stok_gudang` (regression fixed in commit `15434bb`).
+7. Units are managed at `/unit` (admin) and listed at `/units`.
+8. Locations are managed at `/locations` with search at `/locations/search`.
 
 ## Routes
 

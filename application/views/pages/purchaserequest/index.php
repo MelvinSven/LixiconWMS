@@ -34,9 +34,9 @@
                     <table class="table table-striped table-hover table-bordered">
                         <thead class="thead-dark">
                             <tr>
-                                <th width="5%">No</th>
+                                <th width="5%" class="text-center">No</th>
                                 <th width="14%">Nomor PR</th>
-                                <th width="14%">Gudang Tujuan</th>
+                                <th width="14%">Project</th>
                                 <th width="14%">Tgl PR</th>
                                 <th width="14%">Project Admin</th>
                                 <th width="14%" class="text-center">Status</th>
@@ -55,8 +55,8 @@
                                 <?php $no = ($currentPage - 1) * 10 + 1; ?>
                                 <?php foreach ($prs as $p): ?>
                                     <tr>
-                                        <td><?= $no++ ?></td>
-                                        <td><strong><?= $p->kode_pr ?></strong></td>
+                                        <td class="text-center"><?= $no++ ?></td>
+                                        <td><?= $p->kode_pr ?></td>
                                         <td><?= $p->nama_gudang ?? '-' ?></td>
                                         <td><?= date('d M Y', strtotime($p->tanggal_pr)) ?></td>
                                         <td><?= $p->nama_user ?? '-' ?></td>
@@ -65,6 +65,7 @@
                                             $statusConfig = [
                                                 'menunggu' => ['badge' => 'badge-secondary', 'icon' => 'fas fa-clock', 'label' => 'Menunggu'],
                                                 'ditolak' => ['badge' => 'badge-danger', 'icon' => 'fas fa-times', 'label' => 'Ditolak'],
+                                                'disetujui' => ['badge' => 'badge-info', 'icon' => 'fas fa-check', 'label' => 'Disetujui'],
                                                 'diproses' => ['badge' => 'badge-warning', 'icon' => 'fas fa-cog', 'label' => 'Diproses'],
                                                 'selesai' => ['badge' => 'badge-success', 'icon' => 'fas fa-check-circle', 'label' => 'Selesai'],
                                                 'belum_selesai' => ['badge' => 'badge-dark', 'icon' => 'fas fa-exclamation-triangle', 'label' => 'Belum Selesai'],
@@ -76,10 +77,9 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <div class="d-flex flex-row justify-content-center align-items-center"
-                                                style="gap: 0.5rem;">
+                                            <div class="d-flex flex-row justify-content-center align-items-center">
                                                 <a href="<?= base_url('purchaserequest/detail/' . $p->id) ?>"
-                                                    class="btn btn-info btn-sm rounded-lg" title="Detail">
+                                                    class="btn-info  btn-sm rounded-lg" title="Detail">
                                                     <i data-feather="eye" class="feather-sm"></i>
                                                 </a>
                                                 <?php

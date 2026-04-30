@@ -64,7 +64,6 @@
                                 <th width="12%">Dari Gudang</th>
                                 <th width="12%">Gudang Tujuan</th>
                                 <th width="10%">Tgl Permintaan</th>
-                                <th width="10%">Diperlukan</th>
                                 <th width="10%">Pemohon</th>
                                 <th width="12%" class="text-center">Status</th>
                                 <th width="17%" class="text-center">Aksi</th>
@@ -73,7 +72,7 @@
                         <tbody>
                             <?php if (empty($permintaans)): ?>
                                 <tr>
-                                    <td colspan="9" class="text-center py-4 text-muted">
+                                    <td colspan="8" class="text-center py-4 text-muted">
                                         <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
                                         Belum ada data permintaan barang
                                     </td>
@@ -96,9 +95,6 @@
                                         </td>
                                         <td>
                                             <?= date('d M Y', strtotime($p->tanggal_permintaan)) ?>
-                                        </td>
-                                        <td>
-                                            <?= date('d M Y', strtotime($p->tanggal_diperlukan)) ?>
                                         </td>
                                         <td>
                                             <?= $p->nama_user ?? '-' ?>
