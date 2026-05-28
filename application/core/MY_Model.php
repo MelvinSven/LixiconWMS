@@ -182,7 +182,7 @@ class MY_Model extends CI_Model
             'use_page_numbers'  => true,
 
             // Desain pagination Bootstrap v4
-            'full_tag_open'     => '<ul class="pagination">',
+            'full_tag_open'     => '<ul class="pagination pagination-sm mb-0">',
             'full_tag_close'    => '</ul>',
             'attributes'        => ['class' => 'page-link'],
             'first_link'        => false,

@@ -1,0 +1,378 @@
+/* ================================================================
+   theme.css — Aligns admin template visuals with the home page
+   design language. Loaded after style.min.css to win the cascade.
+
+   Palette:
+     primary text  #0f172a    muted text   #94a3b8
+     secondary     #374151    border       #f1f5f9
+     blue accent   #2563eb    blue bg      #eff6ff
+     subtle bg     #f8fafc
+   ================================================================ */
+
+/* ── Navbar ───────────────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .topbar[data-navbarbg="skin6"],
+#main-wrapper[data-layout="vertical"] .topbar .navbar-collapse[data-navbarbg="skin6"],
+#main-wrapper[data-layout="horizontal"] .topbar[data-navbarbg="skin6"],
+#main-wrapper[data-layout="horizontal"] .topbar .navbar-collapse[data-navbarbg="skin6"] {
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Remove duplicate border that the base rule sets on .navbar-collapse */
+.topbar .navbar-collapse {
+    border-bottom: none;
+}
+
+/* ── Sidebar shell ────────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"],
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] {
+    border-right: 1px solid #f1f5f9;
+    box-shadow: none;
+}
+
+/* ── Sidebar dividers ─────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .list-divider,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .list-divider {
+    background: #f1f5f9;
+    opacity: 1;
+    margin: 4px 16px;
+}
+
+/* ── Sidebar section caps ─────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .nav-small-cap,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .nav-small-cap {
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 12px;
+    padding-bottom: 2px;
+}
+
+/* ── Sidebar link text ────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link {
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+/* ── Sidebar icons ────────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link .feather-icon,
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link i,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link .feather-icon,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link i {
+    color: #94a3b8;
+}
+
+/* ── Sidebar hover ────────────────────────────────────────────── */
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover {
+    background: #f8fafc;
+    color: #2563eb;
+}
+
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover .feather-icon,
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover i,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover .feather-icon,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav #sidebarnav .sidebar-item .sidebar-link:hover i {
+    color: #2563eb;
+}
+
+/* ── Sidebar selected / active ────────────────────────────────── */
+
+/* Base rule uses `color: #fff !important` — must counter with !important. */
+.sidebar-nav #sidebarnav .sidebar-item.selected > .sidebar-link {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border-radius: 0 8px 8px 0 !important;
+    box-shadow: none !important;
+}
+
+.sidebar-nav #sidebarnav .sidebar-item.selected > .sidebar-link .feather-icon,
+.sidebar-nav #sidebarnav .sidebar-item.selected > .sidebar-link i {
+    color: #2563eb !important;
+}
+
+/* skin6 rule whites out selected icons — restore blue */
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link .feather-icon,
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link i,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link .feather-icon,
+#main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link i {
+    color: #2563eb !important;
+}
+
+/* ── Breadcrumb / page header ─────────────────────────────────── */
+
+.page-breadcrumb {
+    padding: 18px 24px 14px;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.page-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+}
+
+.page-breadcrumb .breadcrumb-item,
+.page-breadcrumb .breadcrumb-item.active {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.page-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    color: #cbd5e1;
+}
+
+/* Date badge */
+.page-breadcrumb .btn-primary {
+    font-size: 0.8rem;
+    padding: 5px 14px;
+    border-radius: 8px;
+    background: #2563eb;
+    border-color: #2563eb;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+/* ── Navbar role badge ────────────────────────────────────────── */
+
+.navbar-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #374151;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 5px 14px;
+    border-radius: 20px;
+    line-height: 1.4;
+    cursor: default;
+    user-select: none;
+}
+
+.navbar-role-badge i {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+/* ── User dropdown refinements ────────────────────────────────── */
+
+.topbar .dropdown-menu.user-dd {
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    min-width: 180px;
+}
+
+.topbar .dropdown-menu.user-dd .dropdown-item {
+    font-size: 0.85rem;
+    color: #374151;
+    padding: 8px 16px;
+}
+
+.topbar .dropdown-menu.user-dd .dropdown-item:hover {
+    background: #f8fafc;
+    color: #2563eb;
+}
+
+.topbar .dropdown-menu.user-dd .dropdown-divider {
+    border-color: #f1f5f9;
+    margin: 2px 0;
+}
+
+/* ── Modals ───────────────────────────────────────────────────── */
+
+/* Base shell */
+.modal-content {
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* Default header */
+.modal-header {
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 20px 24px 16px !important;
+    background: #fff !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.modal-title {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+}
+
+/* Close button — override text-white */
+.modal-header .close {
+    color: #94a3b8 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    font-size: 1.2rem !important;
+}
+
+.modal-header .close:hover {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* Body */
+.modal-body {
+    padding: 20px 24px !important;
+    color: #374151;
+}
+
+/* Footer */
+.modal-footer {
+    border-top: 1px solid #f1f5f9 !important;
+    padding: 16px 24px !important;
+    background: #fff !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+/* ── Colored header overrides ─────────────────────────────────── */
+/* Replace solid color headers with light tinted versions          */
+
+.modal-header.bg-primary,
+.modal-header[class*="bg-primary"] {
+    background: #eff6ff !important;
+    border-bottom-color: #dbeafe !important;
+}
+.modal-header.bg-primary .modal-title,
+.modal-header.bg-primary .modal-title i,
+.modal-header.bg-primary .modal-title .fas,
+.modal-header.bg-primary .modal-title .far {
+    color: #2563eb !important;
+}
+
+.modal-header.bg-secondary {
+    background: #f8fafc !important;
+    border-bottom-color: #e2e8f0 !important;
+}
+.modal-header.bg-secondary .modal-title,
+.modal-header.bg-secondary .modal-title i {
+    color: #475569 !important;
+}
+
+.modal-header.bg-info {
+    background: #f0f9ff !important;
+    border-bottom-color: #bae6fd !important;
+}
+.modal-header.bg-info .modal-title,
+.modal-header.bg-info .modal-title i {
+    color: #0284c7 !important;
+}
+
+.modal-header.bg-warning {
+    background: #fffbeb !important;
+    border-bottom-color: #fde68a !important;
+}
+.modal-header.bg-warning .modal-title,
+.modal-header.bg-warning .modal-title.text-white,
+.modal-header.bg-warning .modal-title i {
+    color: #d97706 !important;
+}
+
+.modal-header.bg-success {
+    background: #f0fdf4 !important;
+    border-bottom-color: #bbf7d0 !important;
+}
+.modal-header.bg-success .modal-title,
+.modal-header.bg-success .modal-title i {
+    color: #16a34a !important;
+}
+
+.modal-header.bg-danger {
+    background: #fff1f2 !important;
+    border-bottom-color: #fecdd3 !important;
+}
+.modal-header.bg-danger .modal-title,
+.modal-header.bg-danger .modal-title i {
+    color: #dc2626 !important;
+}
+
+/* Backdrop overlay — slightly more opaque for focus */
+.modal-backdrop.show {
+    opacity: 0.4 !important;
+}
+
+/* ── Pagination ───────────────────────────────────────────────── */
+
+.wms-pag-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #f1f5f9;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wms-pag-footer.wms-pag-split {
+    justify-content: space-between;
+}
+
+.wms-pag-footer .btn-reset {
+    height: 32px;
+    padding: 0 12px;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.wms-pag-footer .btn-reset:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+.pagination .page-link {
+    border-radius: 6px !important;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+    color: #374151;
+    border-color: #e2e8f0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.pagination .page-link:hover {
+    background: #f1f5f9;
+    color: #2563eb;
+    border-color: #e2e8f0;
+}
+
+.pagination .page-item.active .page-link {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #fff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #cbd5e1;
+    background: #f8fafc;
+    border-color: #f1f5f9;
+}

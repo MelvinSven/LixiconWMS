@@ -1,697 +1,630 @@
-<!-- ============================================================== -->
-<!-- Container fluid  -->
-<!-- ============================================================== -->
-<div class="container-fluid">
+<style>
+    /* ── Stat cards ── */
+    .db-stat-card {
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-decoration: none;
+        transition: box-shadow 0.15s, transform 0.1s;
+        background: #fff;
+    }
 
+    .db-stat-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .db-stat-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .db-stat-icon.blue   { background: #eff6ff; color: #2563eb; }
+    .db-stat-icon.green  { background: #f0fdf4; color: #16a34a; }
+    .db-stat-icon.sky    { background: #f0f9ff; color: #0284c7; }
+    .db-stat-icon.amber  { background: #fffbeb; color: #d97706; }
+    .db-stat-icon.orange { background: #fff7ed; color: #ea580c; }
+    .db-stat-icon.red    { background: #fff1f2; color: #e11d48; }
+    .db-stat-icon.violet { background: #f5f3ff; color: #7c3aed; }
+    .db-stat-icon.slate  { background: #f8fafc; color: #475569; }
+
+    .db-stat-label {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 4px;
+    }
+
+    .db-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1;
+    }
+
+    /* ── Table cards ── */
+    .db-table-card {
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .db-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .db-table-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .db-view-all {
+        font-size: 0.78rem;
+        color: #2563eb;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        border-radius: 7px;
+        background: #eff6ff;
+        transition: background 0.15s;
+    }
+
+    .db-view-all:hover { background: #dbeafe; text-decoration: none; color: #1d4ed8; }
+
+    .db-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .db-table thead th {
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #94a3b8;
+        padding: 9px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap;
+    }
+
+    .db-table tbody tr {
+        border-bottom: 1px solid #f8fafc;
+        transition: background 0.1s;
+    }
+
+    .db-table tbody tr:hover { background: #fafbfd; }
+    .db-table tbody tr:last-child { border-bottom: none; }
+
+    .db-table tbody td {
+        padding: 12px 16px;
+        vertical-align: middle;
+        font-size: 0.83rem;
+        color: #374151;
+    }
+
+    .db-table tfoot td {
+        padding: 10px 16px;
+        border-top: 1px solid #f1f5f9;
+        background: #f8fafc;
+    }
+
+    /* code/kode badge */
+    .kode-pill {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #2563eb;
+        background: #eff6ff;
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+    }
+
+    /* Status badges */
+    .db-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .db-badge .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .db-badge.menunggu       { background: #fef9c3; color: #854d0e; }
+    .db-badge.menunggu .dot  { background: #ca8a04; }
+
+    .db-badge.disetujui      { background: #e0f2fe; color: #0369a1; }
+    .db-badge.disetujui .dot { background: #0284c7; }
+
+    .db-badge.surat_jalan      { background: #eff6ff; color: #2563eb; }
+    .db-badge.surat_jalan .dot { background: #2563eb; }
+
+    .db-badge.dikirim      { background: #fff7ed; color: #ea580c; }
+    .db-badge.dikirim .dot { background: #ea580c; }
+
+    .db-badge.selesai      { background: #dcfce7; color: #15803d; }
+    .db-badge.selesai .dot { background: #16a34a; }
+
+    .db-badge.belum_selesai      { background: #f1f5f9; color: #475569; }
+    .db-badge.belum_selesai .dot { background: #64748b; }
+
+    .db-badge.ditolak      { background: #fee2e2; color: #dc2626; }
+    .db-badge.ditolak .dot { background: #dc2626; }
+
+    .db-badge.sampai      { background: #dcfce7; color: #15803d; }
+    .db-badge.sampai .dot { background: #16a34a; }
+
+    /* Empty state inside table */
+    .db-table-empty {
+        text-align: center;
+        padding: 36px 20px;
+        color: #cbd5e1;
+    }
+
+    .db-table-empty i { font-size: 1.6rem; margin-bottom: 8px; }
+    .db-table-empty p { margin: 0; font-size: 0.82rem; }
+
+    /* Pagination container — extends .wms-pag-footer from theme.css */
+    .db-pagination {
+        justify-content: space-between;
+    }
+
+    .row-num { color: #94a3b8; font-size: 0.78rem; }
+
+    .stat-row { margin-left: -6px; margin-right: -6px; }
+    .stat-row > [class*="col-"] { padding-left: 6px; padding-right: 6px; }
+</style>
+
+<div class="container-fluid">
     <?php $this->load->view('layouts/_alert') ?>
 
-    <!-- Date Filter -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <!-- <div class="card shadow-sm">
-                <div class="card-body py-3">
-                    <form action="<?= base_url('home/filter_date') ?>" method="POST"
-                        class="d-flex align-items-center flex-wrap">
-                        <label class="font-weight-semibold mb-0 mr-3"><i class="fas fa-filter mr-1"></i> Filter
-                            Tanggal:</label>
-                        <input type="date" name="dashboard_date" class="form-control mr-2" style="max-width: 220px;"
-                            value="<?= !empty($filter_date) ? date('Y-m-d', strtotime($filter_date)) : '' ?>">
-                        <button type="submit" class="btn btn-primary mr-2"><i class="fas fa-search"></i> Filter</button>
-                        <?php if (!empty($filter_date)): ?>
-                            <a href="<?= base_url('home/reset_filter') ?>" class="btn btn-secondary mr-3"><i
-                                    class="fas fa-times"></i> Reset</a>
-                            <span class="badge badge-info py-2 px-3 font-weight-normal" style="font-size: 0.9rem;">
-                                <i class="fas fa-calendar-check mr-1"></i> Menampilkan data tanggal:
-                                <?= date('d-m-Y', strtotime($filter_date)) ?>
-                            </span>
-                        <?php endif; ?>
-                    </form>
+    <!-- ── Stat Cards Row 1 ── -->
+    <div class="row stat-row mb-2">
+        <div class="col-12 col-md-4 mb-2">
+            <a href="<?= base_url('users') ?>" class="db-stat-card">
+                <div class="db-stat-icon blue"><i class="fas fa-users"></i></div>
+                <div>
+                    <p class="db-stat-label">Staff</p>
+                    <p class="db-stat-value"><?= $jumlah_staff ?></p>
                 </div>
-            </div> -->
+            </a>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <a href="<?= base_url('items') ?>" class="db-stat-card">
+                <div class="db-stat-icon violet"><i class="fas fa-boxes"></i></div>
+                <div>
+                    <p class="db-stat-label">Total Barang</p>
+                    <p class="db-stat-value"><?= $total_barang ?></p>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-md-4 mb-2">
+            <a href="<?= base_url('warehouses') ?>" class="db-stat-card">
+                <div class="db-stat-icon sky"><i class="fas fa-warehouse"></i></div>
+                <div>
+                    <p class="db-stat-label">Gudang</p>
+                    <p class="db-stat-value"><?= $jumlah_gudang ?></p>
+                </div>
+            </a>
         </div>
     </div>
 
-    <!-- Summary Card Row 1 -->
-    <div class="row">
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-left-primary shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h2 class="text-dark mb-1 font-weight-medium"><?= $jumlah_staff ?></h2>
-                            <a href="<?= base_url('users') ?>">
-                                <h5 class="text-muted font-weight-normal mb-0">Staff</h5>
-                            </a>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="text-primary"><i class="fas fa-users fa-2x"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-left-success shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h2 class="text-dark mb-1 font-weight-medium"><?= $total_barang ?></h2>
-                            <a href="<?= base_url('items') ?>">
-                                <h5 class="text-muted font-weight-normal mb-0">Total Barang</h5>
-                            </a>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="text-success"><i class="fas fa-boxes fa-2x"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-left-info shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h2 class="text-dark mb-1 font-weight-medium"><?= $jumlah_gudang ?></h2>
-                            <a href="<?= base_url('warehouses') ?>">
-                                <h5 class="text-muted font-weight-normal mb-0">Gudang</h5>
-                            </a>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="text-info"><i class="fas fa-warehouse fa-2x"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-left-warning shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <h2 class="text-dark mb-1 font-weight-medium"><?= number_format($jumlah_stok) ?></h2>
-                            <a href="<?= base_url('items') ?>">
-                                <h5 class="text-muted font-weight-normal mb-0">Total Stok</h5>
-                            </a>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="text-warning"><i class="fas fa-cubes fa-2x"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Summary Card Row 2 - Barang Masuk & Keluar / PR Stats -->
+    <!-- ── Stat Cards Row 2 (role-conditional) ── -->
     <?php if ($this->session->userdata('role') === 'purchasing_admin'): ?>
-        <div class="row">
-            <div class="col-md-6 col-lg-3">
-                <div class="card bg-warning text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $pr_menunggu ?></h2>
-                                <a href="<?= base_url('purchaserequest') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">PR Menunggu</h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-clock fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+        <div class="row stat-row mb-2">
+            <div class="col-12 col-md-3 mb-2">
+                <a href="<?= base_url('purchaserequest') ?>" class="db-stat-card">
+                    <div class="db-stat-icon amber"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <p class="db-stat-label">PR Menunggu</p>
+                        <p class="db-stat-value"><?= $pr_menunggu ?></p>
                     </div>
-                </div>
+                </a>
             </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card bg-info text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $pr_disetujui ?></h2>
-                                <a href="<?= base_url('purchaserequest') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">PR Disetujui</h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-check fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+            <div class="col-12 col-md-3 mb-2">
+                <a href="<?= base_url('purchaserequest') ?>" class="db-stat-card">
+                    <div class="db-stat-icon sky"><i class="fas fa-check"></i></div>
+                    <div>
+                        <p class="db-stat-label">PR Disetujui</p>
+                        <p class="db-stat-value"><?= $pr_disetujui ?></p>
                     </div>
-                </div>
+                </a>
             </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card bg-success text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $pr_selesai ?></h2>
-                                <a href="<?= base_url('purchaserequest') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">PR Selesai</h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-check-circle fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+            <div class="col-12 col-md-3 mb-2">
+                <a href="<?= base_url('purchaserequest') ?>" class="db-stat-card">
+                    <div class="db-stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <p class="db-stat-label">PR Selesai</p>
+                        <p class="db-stat-value"><?= $pr_selesai ?></p>
                     </div>
-                </div>
+                </a>
             </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card bg-dark text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $pr_belum_selesai ?></h2>
-                                <a href="<?= base_url('purchaserequest') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">PR Belum Selesai</h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+            <div class="col-12 col-md-3 mb-2">
+                <a href="<?= base_url('purchaserequest') ?>" class="db-stat-card">
+                    <div class="db-stat-icon slate"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        <p class="db-stat-label">PR Belum Selesai</p>
+                        <p class="db-stat-value"><?= $pr_belum_selesai ?></p>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     <?php else: ?>
-        <div class="row">
-            <div class="col-md-6 col-lg-4">
-                <div class="card bg-success text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $jumlah_barang_masuk ?></h2>
-                                <a href="<?= base_url('inputs') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">
-                                        Barang
-                                        Masuk<?= !empty($filter_date) ? ' (' . date('d/m/Y', strtotime($filter_date)) . ')' : '' ?>
-                                    </h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-arrow-down fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+        <div class="row stat-row mb-2">
+            <div class="col-12 col-md-6 mb-2">
+                <a href="<?= base_url('items') ?>" class="db-stat-card">
+                    <div class="db-stat-icon blue"><i class="fas fa-box-open"></i></div>
+                    <div>
+                        <p class="db-stat-label">Barang Tersedia</p>
+                        <p class="db-stat-value"><?= $jumlah_barang ?></p>
                     </div>
-                </div>
+                </a>
             </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="card bg-danger text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $jumlah_barang_keluar ?></h2>
-                                <a href="<?= base_url('outputs') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">
-                                        Barang
-                                        Keluar<?= !empty($filter_date) ? ' (' . date('d/m/Y', strtotime($filter_date)) . ')' : '' ?>
-                                    </h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-arrow-up fa-2x opacity-50"></i>
-                            </div>
-                        </div>
+            <div class="col-12 col-md-6 mb-2">
+                <a href="<?= base_url('items') ?>" class="db-stat-card">
+                    <div class="db-stat-icon amber"><i class="fas fa-cubes"></i></div>
+                    <div>
+                        <p class="db-stat-label">Total Stok</p>
+                        <p class="db-stat-value"><?= number_format($jumlah_stok) ?></p>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 col-lg-4">
-                <div class="card bg-primary text-white shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h2 class="text-white mb-1 font-weight-medium"><?= $jumlah_barang ?></h2>
-                                <a href="<?= base_url('items') ?>" class="text-white">
-                                    <h5 class="text-white font-weight-normal mb-0">Barang Tersedia (Stok > 0)</h5>
-                                </a>
-                            </div>
-                            <div class="ml-auto">
-                                <i class="fas fa-box-open fa-2x opacity-50"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
-    <?php endif; ?>
+    <?php endif ?>
 
-    <!-- Grafik Statistik / PR Table -->
+    <!-- ── Tables ── -->
     <?php if ($this->session->userdata('role') === 'purchasing_admin'): ?>
-        <div class="row mt-2">
-            <div class="col-12 col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-dark d-flex justify-content-between align-items-center rounded-top p-3">
-                        <h5 class="text-white mb-0">
-                            <i class="fas fa-file-invoice mr-2"></i> Purchase Request Terbaru
-                        </h5>
+
+        <!-- PR Terbaru -->
+        <div class="row mb-4">
+            <div class="col-12 col-md-8">
+                <div class="db-table-card">
+                    <div class="db-table-header">
+                        <h5 class="db-table-title"><i class="fas fa-file-invoice" style="color:#2563eb; margin-right:8px;"></i>Purchase Request Terbaru</h5>
+                        <a href="<?= base_url('purchaserequest') ?>" class="db-view-all">
+                            Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.65rem;"></i>
+                        </a>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="thead-dark">
+                    <div class="table-responsive">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal PR</th>
+                                    <th>Gudang</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($newest_prs)): ?>
                                     <tr>
-                                        <th width="10%" class="text-center">No</th>
-                                        <th width="20%">Tanggal PR</th>
-                                        <th width="32%">Gudang</th>
-                                        <th width="15%" class="text-center">Status</th>
-                                        <th width="15%" class="text-center">Detail</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($newest_prs)): ?>
-                                        <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                Belum ada Purchase Request
-                                            </td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php
-                                        $prStatusConfig = [
-                                            'menunggu' => ['badge' => 'badge-warning', 'label' => 'Menunggu'],
-                                            'disetujui' => ['badge' => 'badge-info', 'label' => 'Disetujui'],
-                                            'ditolak' => ['badge' => 'badge-danger', 'label' => 'Ditolak'],
-                                            'belum_selesai' => ['badge' => 'badge-dark', 'label' => 'Belum Selesai'],
-                                            'selesai' => ['badge' => 'badge-success', 'label' => 'Selesai'],
-                                        ];
-                                        $no = 1;
-                                        ?>
-                                        <?php foreach ($newest_prs as $pr): ?>
-                                            <?php $sc = $prStatusConfig[$pr->status] ?? ['badge' => 'badge-secondary', 'label' => $pr->status]; ?>
-                                            <tr>
-                                                <td class="text-center"><?= $no++ ?></td>
-                                                <td><?= date('d M Y', strtotime($pr->tanggal_pr)) ?></td>
-                                                <td><?= htmlspecialchars($pr->nama_gudang ?? '-') ?></td>
-                                                <td class="text-center">
-                                                    <span class="badge <?= $sc['badge'] ?>"><?= $sc['label'] ?></span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="<?= base_url('purchaserequest/detail/' . $pr->id) ?>" class="btn-sm">
-                                                        <i class="fas fa-eye text-primary"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5" class="text-left">
-                                            <a href="<?= base_url('purchaserequest') ?>"
-                                                class="btn btn-primary btn-sm rounded mx-2">
-                                                <i class="fas fa-list mr-2"></i> Lihat Semua
-                                            </a>
+                                        <td colspan="5">
+                                            <div class="db-table-empty">
+                                                <div><i class="fas fa-inbox"></i></div>
+                                                <p>Belum ada Purchase Request</p>
+                                            </div>
                                         </td>
                                     </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                                <?php else: ?>
+                                    <?php
+                                    $prLabels = [
+                                        'menunggu'      => 'Menunggu',
+                                        'disetujui'     => 'Disetujui',
+                                        'ditolak'       => 'Ditolak',
+                                        'belum_selesai' => 'Belum Selesai',
+                                        'selesai'       => 'Selesai',
+                                    ];
+                                    $no = 1;
+                                    foreach ($newest_prs as $pr):
+                                        $prStatus = $pr->status;
+                                        $prLabel  = $prLabels[$prStatus] ?? $prStatus;
+                                    ?>
+                                        <tr>
+                                            <td class="row-num"><?= $no++ ?></td>
+                                            <td><?= date('d M Y', strtotime($pr->tanggal_pr)) ?></td>
+                                            <td><?= htmlspecialchars($pr->nama_gudang ?? '-') ?></td>
+                                            <td class="text-center">
+                                                <span class="db-badge <?= $prStatus ?>">
+                                                    <span class="dot"></span><?= $prLabel ?>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="<?= base_url('purchaserequest/detail/' . $pr->id) ?>"
+                                                    style="color:#2563eb; font-size:0.85rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach ?>
+                                <?php endif ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
+
     <?php else: ?>
-        <div class="row mt-2">
-            <!-- <div class="col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">Grafik Total Data (Bar Chart)</h4>
-                        <canvas id="barChart" height="180"></canvas>
-                    </div>
-                </div>
-            </div> -->
 
-            <!-- <div class="col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">Distribusi Data (Pie Chart)</h4>
-                        <div style="position: relative; min-height: 280px;">
-                            <canvas id="pieChart"></canvas>
-                        </div>
+        <!-- Permintaan Aktif -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="db-table-card">
+                    <div class="db-table-header">
+                        <h5 class="db-table-title"><i class="fas fa-clipboard-list" style="color:#2563eb; margin-right:8px;"></i>Daftar Permintaan Aktif</h5>
+                        <a href="<?= base_url('preorder') ?>" class="db-view-all">
+                            Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.65rem;"></i>
+                        </a>
                     </div>
+                    <div class="table-responsive">
+                        <table class="db-table" id="tblPermintaanAktif">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kode</th>
+                                    <th>Dari Gudang</th>
+                                    <th>Gudang Tujuan</th>
+                                    <th>Tanggal</th>
+                                    <th>Pemohon</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_permintaan_aktif)): ?>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="db-table-empty">
+                                                <div><i class="fas fa-inbox"></i></div>
+                                                <p>Tidak ada permintaan aktif</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php
+                                    $aktifLabels = [
+                                        'menunggu'    => 'Menunggu',
+                                        'disetujui'   => 'Disetujui',
+                                        'surat_jalan' => 'Surat Jalan',
+                                        'dikirim'     => 'Dikirim',
+                                    ];
+                                    $no = 1;
+                                    foreach ($dashboard_permintaan_aktif as $p):
+                                        $st = $p->status;
+                                        $lbl = $aktifLabels[$st] ?? $st;
+                                    ?>
+                                        <tr>
+                                            <td class="row-num"><?= $no++ ?></td>
+                                            <td><span class="kode-pill"><?= $p->kode_permintaan ?></span></td>
+                                            <td><?= htmlspecialchars($p->nama_gudang_asal ?? '-') ?></td>
+                                            <td><?= htmlspecialchars($p->nama_gudang_tujuan ?? '-') ?></td>
+                                            <td><?= date('d M Y', strtotime($p->tanggal_permintaan)) ?></td>
+                                            <td><?= htmlspecialchars($p->nama_user ?? '-') ?></td>
+                                            <td class="text-center">
+                                                <span class="db-badge <?= $st ?>">
+                                                    <span class="dot"></span><?= $lbl ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach ?>
+                                <?php endif ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="db-pagination" id="paginationPermintaanAktif"></div>
                 </div>
-            </div> -->
+            </div>
         </div>
-    <?php endif; ?>
 
-    <!-- Daftar Permintaan Aktif -->
-    <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-        <div class="row mt-4">
+        <!-- Riwayat Permintaan -->
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-dark      d-flex justify-content-between align-items-center">
-                        <h5 class="text-white mb-0">
-                            <i class="fas fa-clipboard-list mr-2"></i> Daftar Permintaan
-                        </h5>
-                        <a href="<?= base_url('preorder') ?>" class="btn btn-light btn-sm">
-                            Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                <div class="db-table-card">
+                    <div class="db-table-header">
+                        <h5 class="db-table-title"><i class="fas fa-history" style="color:#7c3aed; margin-right:8px;"></i>Riwayat Permintaan</h5>
+                        <a href="<?= base_url('preorder') ?>" class="db-view-all">
+                            Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.65rem;"></i>
                         </a>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover table-bordered mb-0" id="tblPermintaanAktif">
-                                <thead class="thead-dark">
+                    <div class="table-responsive">
+                        <table class="db-table" id="tblRiwayatPermintaan">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kode</th>
+                                    <th>Dari Gudang</th>
+                                    <th>Gudang Tujuan</th>
+                                    <th>Tanggal</th>
+                                    <th>Pemohon</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_riwayat_permintaan)): ?>
                                     <tr>
-                                        <th width="5%">No</th>
-                                        <th width="14%">Kode Permintaan</th>
-                                        <th width="14%">Dari Gudang</th>
-                                        <th width="14%">Gudang Tujuan</th>
-                                        <th width="12%">Tgl Permintaan</th>
-                                        <th width="13%">Pemohon</th>
-                                        <th width="16%" class="text-center">Status</th>
+                                        <td colspan="7">
+                                            <div class="db-table-empty">
+                                                <div><i class="fas fa-inbox"></i></div>
+                                                <p>Belum ada riwayat permintaan</p>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($dashboard_permintaan_aktif)): ?>
+                                <?php else: ?>
+                                    <?php
+                                    $riwayatLabels = [
+                                        'selesai'       => 'Selesai',
+                                        'belum_selesai' => 'Belum Selesai',
+                                        'ditolak'       => 'Ditolak',
+                                    ];
+                                    $no = 1;
+                                    foreach ($dashboard_riwayat_permintaan as $p):
+                                        $st = $p->status;
+                                        $lbl = $riwayatLabels[$st] ?? $st;
+                                    ?>
                                         <tr>
-                                            <td colspan="7" class="text-center py-4 text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                Tidak ada permintaan aktif
+                                            <td class="row-num"><?= $no++ ?></td>
+                                            <td><span class="kode-pill"><?= $p->kode_permintaan ?></span></td>
+                                            <td><?= htmlspecialchars($p->nama_gudang_asal ?? '-') ?></td>
+                                            <td><?= htmlspecialchars($p->nama_gudang_tujuan ?? '-') ?></td>
+                                            <td><?= date('d M Y', strtotime($p->tanggal_permintaan)) ?></td>
+                                            <td><?= htmlspecialchars($p->nama_user ?? '-') ?></td>
+                                            <td class="text-center">
+                                                <span class="db-badge <?= $st ?>">
+                                                    <span class="dot"></span><?= $lbl ?>
+                                                </span>
                                             </td>
                                         </tr>
-                                    <?php else: ?>
-                                        <?php $no = 1; ?>
-                                        <?php foreach ($dashboard_permintaan_aktif as $p): ?>
-                                            <?php
-                                            $statusConfig = [
-                                                'menunggu' => ['badge' => 'badge-secondary', 'icon' => 'fas fa-clock', 'label' => 'Menunggu'],
-                                                'disetujui' => ['badge' => 'badge-info', 'icon' => 'fas fa-check', 'label' => 'Disetujui'],
-                                                'surat_jalan' => ['badge' => 'badge-primary', 'icon' => 'fas fa-file-alt', 'label' => 'Surat Jalan'],
-                                                'dikirim' => ['badge' => 'badge-warning', 'icon' => 'fas fa-shipping-fast', 'label' => 'Dikirim'],
-                                            ];
-                                            $sc = $statusConfig[$p->status] ?? ['badge' => 'badge-secondary', 'icon' => 'fas fa-question', 'label' => $p->status];
-                                            ?>
-                                            <tr>
-                                                <td><?= $no++ ?></td>
-                                                <td><strong><?= $p->kode_permintaan ?></strong></td>
-                                                <td><?= $p->nama_gudang_asal ?? '-' ?></td>
-                                                <td><?= $p->nama_gudang_tujuan ?? '-' ?></td>
-                                                <td><?= date('d M Y', strtotime($p->tanggal_permintaan)) ?></td>
-                                                <td><?= $p->nama_user ?? '-' ?></td>
-                                                <td class="text-center">
-                                                    <span class="badge <?= $sc['badge'] ?>">
-                                                        <i class="<?= $sc['icon'] ?> mr-1"></i><?= $sc['label'] ?>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    <?php endforeach ?>
+                                <?php endif ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="card-footer py-2" id="paginationPermintaanAktif"></div>
+                    <div class="db-pagination" id="paginationRiwayatPermintaan"></div>
                 </div>
             </div>
         </div>
-    <?php endif; ?>
-    <!-- Riwayat Permintaan -->
-    <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-        <div class="row mt-4 mb-4">
+
+        <!-- Riwayat Transfer -->
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-                        <h5 class="text-white mb-0">
-                            <i class="fas fa-history mr-2"></i> Riwayat Permintaan
-                        </h5>
-                        <a href="<?= base_url('preorder') ?>" class="btn btn-light btn-sm">
-                            Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                <div class="db-table-card">
+                    <div class="db-table-header">
+                        <h5 class="db-table-title"><i class="fas fa-exchange-alt" style="color:#0284c7; margin-right:8px;"></i>Riwayat Pemindahan Barang</h5>
+                        <a href="<?= base_url('transfer') ?>" class="db-view-all">
+                            Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.65rem;"></i>
                         </a>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover table-bordered mb-0" id="tblRiwayatPermintaan">
-                                <thead class="thead-dark">
+                    <div class="table-responsive">
+                        <table class="db-table" id="tblRiwayatTransfer">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kode</th>
+                                    <th>Gudang Asal</th>
+                                    <th>Gudang Tujuan</th>
+                                    <th>Waktu</th>
+                                    <th>User</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($dashboard_transfers)): ?>
                                     <tr>
-                                        <th width="5%">No</th>
-                                        <th width="14%">Kode Permintaan</th>
-                                        <th width="14%">Dari Gudang</th>
-                                        <th width="14%">Gudang Tujuan</th>
-                                        <th width="12%">Tgl Permintaan</th>
-                                        <th width="13%">Pemohon</th>
-                                        <th width="16%" class="text-center">Status</th>
+                                        <td colspan="7">
+                                            <div class="db-table-empty">
+                                                <div><i class="fas fa-inbox"></i></div>
+                                                <p>Belum ada data pemindahan barang</p>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($dashboard_riwayat_permintaan)): ?>
+                                <?php else: ?>
+                                    <?php $no = 1; foreach ($dashboard_transfers as $t): ?>
                                         <tr>
-                                            <td colspan="7" class="text-center py-4 text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                Belum ada riwayat permintaan
+                                            <td class="row-num"><?= $no++ ?></td>
+                                            <td><span class="kode-pill"><?= $t->kode_transfer ?></span></td>
+                                            <td><?= htmlspecialchars($t->nama_gudang_asal ?? '-') ?></td>
+                                            <td><?= htmlspecialchars($t->nama_gudang_tujuan ?? '-') ?></td>
+                                            <td><?= date('d M Y H:i', strtotime($t->waktu)) ?></td>
+                                            <td><?= htmlspecialchars($t->nama_user ?? '-') ?></td>
+                                            <td class="text-center">
+                                                <?php $st = ($t->status === 'sampai') ? 'sampai' : 'dikirim'; ?>
+                                                <span class="db-badge <?= $st ?>">
+                                                    <span class="dot"></span>
+                                                    <?= $st === 'sampai' ? 'Sampai' : 'Dikirim' ?>
+                                                </span>
                                             </td>
                                         </tr>
-                                    <?php else: ?>
-                                        <?php $no = 1; ?>
-                                        <?php foreach ($dashboard_riwayat_permintaan as $p): ?>
-                                            <?php
-                                            $statusConfig = [
-                                                'selesai' => ['badge' => 'badge-success', 'icon' => 'fas fa-check-circle', 'label' => 'Selesai'],
-                                                'belum_selesai' => ['badge' => 'badge-dark', 'icon' => 'fas fa-exclamation-triangle', 'label' => 'Belum Selesai'],
-                                                'ditolak' => ['badge' => 'badge-danger', 'icon' => 'fas fa-times', 'label' => 'Ditolak'],
-                                            ];
-                                            $sc = $statusConfig[$p->status] ?? ['badge' => 'badge-secondary', 'icon' => 'fas fa-question', 'label' => $p->status];
-                                            ?>
-                                            <tr>
-                                                <td><?= $no++ ?></td>
-                                                <td><strong><?= $p->kode_permintaan ?></strong></td>
-                                                <td><?= $p->nama_gudang_asal ?? '-' ?></td>
-                                                <td><?= $p->nama_gudang_tujuan ?? '-' ?></td>
-                                                <td><?= date('d M Y', strtotime($p->tanggal_permintaan)) ?></td>
-                                                <td><?= $p->nama_user ?? '-' ?></td>
-                                                <td class="text-center">
-                                                    <span class="badge <?= $sc['badge'] ?>">
-                                                        <i class="<?= $sc['icon'] ?> mr-1"></i><?= $sc['label'] ?>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                    <?php endforeach ?>
+                                <?php endif ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="card-footer py-2" id="paginationRiwayatPermintaan"></div>
+                    <div class="db-pagination" id="paginationRiwayatTransfer"></div>
                 </div>
             </div>
         </div>
-    <?php endif; ?>
-    <!-- Riwayat Pemindahan Barang -->
-    <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-        <div class="row mt-4 mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-                        <h5 class="text-white mb-0">
-                            <i class="fas fa-exchange-alt mr-2"></i> Riwayat Pemindahan Barang
-                        </h5>
-                        <a href="<?= base_url('transfer') ?>" class="btn btn-light btn-sm">
-                            Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover table-bordered mb-0" id="tblRiwayatTransfer">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th width="5%">No</th>
-                                        <th width="18%">Kode Pemindahan</th>
-                                        <th width="18%">Gudang Asal</th>
-                                        <th width="18%">Gudang Tujuan</th>
-                                        <th width="16%">Waktu</th>
-                                        <th width="12%">User</th>
-                                        <th width="13%" class="text-center">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($dashboard_transfers)): ?>
-                                        <tr>
-                                            <td colspan="7" class="text-center py-4 text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                                                Belum ada data pemindahan barang
-                                            </td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php $no = 1; ?>
-                                        <?php foreach ($dashboard_transfers as $transfer): ?>
-                                            <tr>
-                                                <td><?= $no++ ?></td>
-                                                <td><strong><?= $transfer->kode_transfer ?></strong></td>
-                                                <td><?= $transfer->nama_gudang_asal ?? '-' ?></td>
-                                                <td><?= $transfer->nama_gudang_tujuan ?? '-' ?></td>
-                                                <td><?= date('d M Y H:i', strtotime($transfer->waktu)) ?></td>
-                                                <td><?= $transfer->nama_user ?? '-' ?></td>
-                                                <td class="text-center">
-                                                    <?php if ($transfer->status == 'sampai'): ?>
-                                                        <span class="badge badge-success"><i
-                                                                class="fas fa-check-circle mr-1"></i>Sampai</span>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-warning"><i
-                                                                class="fas fa-shipping-fast mr-1"></i>Dikirim</span>
-                                                    <?php endif ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-footer py-2" id="paginationRiwayatTransfer"></div>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
+
+    <?php endif ?>
 </div>
 
-<!-- ============================================================== -->
-<!-- End Container fluid  -->
-<!-- ============================================================== -->
-
-<!-- Client-side Table Pagination -->
+<!-- Client-side table pagination -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function initPagination(tableId, pagId, perPage) {
-            var table = document.getElementById(tableId);
-            var pagEl = document.getElementById(pagId);
-            if (!table || !pagEl) return;
-            var tbody = table.querySelector('tbody');
-            if (!tbody) return;
-            var rows = Array.from(tbody.querySelectorAll('tr'));
-            if (rows.length <= 1 && rows[0] && rows[0].querySelector('td[colspan]')) return;
-            var total = rows.length;
-            var pages = Math.ceil(total / perPage);
-            var cur = 1;
+document.addEventListener('DOMContentLoaded', function () {
+    function initPagination(tableId, pagId, perPage) {
+        var table = document.getElementById(tableId);
+        var pagEl = document.getElementById(pagId);
+        if (!table || !pagEl) return;
+        var tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        var rows = Array.from(tbody.querySelectorAll('tr'));
+        if (rows.length <= 1 && rows[0] && rows[0].querySelector('td[colspan]')) return;
+        var total = rows.length;
+        var pages = Math.ceil(total / perPage);
+        var cur = 1;
 
-            function show(p) {
-                cur = p;
-                var s = (p - 1) * perPage, e = s + perPage;
-                rows.forEach(function (r, i) { r.style.display = (i >= s && i < e) ? '' : 'none'; });
-                render();
-            }
-
-            function render() {
-                if (pages <= 1) { pagEl.innerHTML = ''; return; }
-                var s = (cur - 1) * perPage + 1, e = Math.min(cur * perPage, total);
-                var h = '<div class="d-flex align-items-center justify-content-between flex-wrap">';
-                h += '<small class="text-muted">Menampilkan <strong>' + s + '\u2013' + e + '</strong> dari <strong>' + total + '</strong> data</small>';
-                h += '<nav><ul class="pagination pagination-sm mb-0">';
-                h += '<li class="page-item' + (cur === 1 ? ' disabled' : '') + '"><a class="page-link" href="#" data-p="' + (cur - 1) + '">&laquo;</a></li>';
-                for (var i = 1; i <= pages; i++) h += '<li class="page-item' + (i === cur ? ' active' : '') + '"><a class="page-link" href="#" data-p="' + i + '">' + i + '</a></li>';
-                h += '<li class="page-item' + (cur === pages ? ' disabled' : '') + '"><a class="page-link" href="#" data-p="' + (cur + 1) + '">&raquo;</a></li>';
-                h += '</ul></nav></div>';
-                pagEl.innerHTML = h;
-                pagEl.querySelectorAll('a.page-link[data-p]').forEach(function (a) {
-                    a.addEventListener('click', function (ev) {
-                        ev.preventDefault();
-                        var pg = parseInt(this.getAttribute('data-p'));
-                        if (pg >= 1 && pg <= pages) show(pg);
-                    });
-                });
-            }
-            show(1);
+        function show(p) {
+            cur = p;
+            var s = (p - 1) * perPage, e = s + perPage;
+            rows.forEach(function (r, i) { r.style.display = (i >= s && i < e) ? '' : 'none'; });
+            render();
         }
-        initPagination('tblPermintaanAktif', 'paginationPermintaanAktif', 5);
-        initPagination('tblRiwayatPermintaan', 'paginationRiwayatPermintaan', 5);
-        initPagination('tblRiwayatTransfer', 'paginationRiwayatTransfer', 5);
-    });
+
+        function render() {
+            if (pages <= 1) { pagEl.innerHTML = ''; pagEl.style.display = 'none'; return; }
+            pagEl.style.display = '';
+            var s = (cur - 1) * perPage + 1, e = Math.min(cur * perPage, total);
+            var h = '<div class="wms-pag-split d-flex p-3 align-items-center flex-wrap" style="gap:8px;">';
+            h += '<small style="font-size:0.78rem; color:#94a3b8;">Menampilkan <strong style="color:#374151;">' + s + '–' + e + '</strong> dari <strong style="color:#374151;">' + total + '</strong></small>';
+            h += '<nav><ul class="pagination pagination-sm mb-0">';
+            h += '<li class="page-item' + (cur === 1 ? ' disabled' : '') + '"><a class="page-link" href="#" data-p="' + (cur - 1) + '">&laquo;</a></li>';
+            for (var i = 1; i <= pages; i++) {
+                h += '<li class="page-item' + (i === cur ? ' active' : '') + '"><a class="page-link" href="#" data-p="' + i + '">' + i + '</a></li>';
+            }
+            h += '<li class="page-item' + (cur === pages ? ' disabled' : '') + '"><a class="page-link" href="#" data-p="' + (cur + 1) + '">&raquo;</a></li>';
+            h += '</ul></nav></div>';
+            pagEl.innerHTML = h;
+            pagEl.querySelectorAll('a.page-link[data-p]').forEach(function (a) {
+                a.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    var pg = parseInt(this.getAttribute('data-p'));
+                    if (pg >= 1 && pg <= pages) show(pg);
+                });
+            });
+        }
+        show(1);
+    }
+
+    initPagination('tblPermintaanAktif',    'paginationPermintaanAktif',    5);
+    initPagination('tblRiwayatPermintaan',   'paginationRiwayatPermintaan',  5);
+    initPagination('tblRiwayatTransfer',     'paginationRiwayatTransfer',    5);
+});
 </script>
-
-<!-- Chart.js -->
-<?php if ($this->session->userdata('role') !== 'purchasing_admin'): ?>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<?php endif; ?>
-
-<?php if ($this->session->userdata('role') !== 'purchasing_admin'): ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const staff = <?= $jumlah_staff ?>;
-            const barang = <?= $total_barang ?>;
-            const gudang = <?= $jumlah_gudang ?>;
-            const stok = <?= $jumlah_stok ?>;
-            const barangMasuk = <?= $jumlah_barang_masuk ?>;
-            const barangKeluar = <?= $jumlah_barang_keluar ?>;
-
-            // Bar Chart
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: ['Staff', 'Barang', 'Gudang', 'Stok', 'Masuk', 'Keluar'],
-                    datasets: [{
-                        label: 'Jumlah',
-                        data: [staff, barang, gudang, stok, barangMasuk, barangKeluar],
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 206, 86, 0.7)',
-                            'rgba(75, 192, 192, 0.7)',
-                            'rgba(153, 102, 255, 0.7)',
-                            'rgba(40, 167, 69, 0.7)',
-                            'rgba(220, 53, 69, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(40, 167, 69, 1)',
-                            'rgba(220, 53, 69, 1)'
-                        ],
-                        borderWidth: 1,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 2,
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: 'Total Data Gudang' }
-                    },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-
-            // Pie Chart
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: ['Staff', 'Barang', 'Gudang', 'Masuk', 'Keluar'],
-                    datasets: [{
-                        data: [staff, barang, gudang, barangMasuk, barangKeluar],
-                        backgroundColor: [
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#4BC0C0',
-                            '#28a745',
-                            '#dc3545'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: { display: true, text: 'Distribusi Data Gudang' },
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 16, boxWidth: 14 }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-<?php endif; ?>

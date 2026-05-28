@@ -5,6 +5,15 @@ For the current task, i want to allow Admin (Main Admin not Project Admin) to de
 
 ---
 
+## Done
+
+### Layout theme alignment (2026-05-25)
+- Created `assets/css/theme.css` — overrides admin template skin6 defaults
+- Linked after `style.min.css` in `dashboard.php`
+- Navbar: white bg, subtle border-bottom, clean role badge with display names
+- Sidebar: blue active state (replaces purple gradient), muted section caps, light dividers, blue hover
+- Breadcrumb header: white bg, border-bottom, dark title, muted path text
+
 ## Active
 
 **Task:** _(none — fill this in when starting work)_

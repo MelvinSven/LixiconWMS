@@ -157,18 +157,24 @@
                 </div>
 
                 <?php if (!empty($transfers) && $totalTransfers > 10): ?>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <?php
-                            $totalPages = ceil($totalTransfers / 10);
-                            for ($i = 1; $i <= $totalPages; $i++):
-                                ?>
-                                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                                    <a class="page-link" href="<?= base_url('transfer?page=' . $i) ?>"><?= $i ?></a>
+                    <?php $totalPages = ceil($totalTransfers / 10); ?>
+                    <div class="wms-pag-footer">
+                        <nav aria-label="Navigasi halaman">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('transfer?page=' . ($page - 1)) ?>">&laquo;</a>
                                 </li>
-                            <?php endfor; ?>
-                        </ul>
-                    </nav>
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                                        <a class="page-link" href="<?= base_url('transfer?page=' . $i) ?>"><?= $i ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('transfer?page=' . ($page + 1)) ?>">&raquo;</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

@@ -65,6 +65,31 @@ class Units extends MY_Controller
         $this->view($data);
     }
 
+    public function create()
+    {
+        if ($this->session->userdata('role') != 'admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak!');
+            redirect(base_url('units'));
+            return;
+        }
+
+        if (!$this->units->validate()) {
+            $this->session->set_flashdata('error', validation_errors() ?: 'Data tidak valid');
+            redirect(base_url('units'));
+            return;
+        }
+
+        $insert = ['nama' => $this->input->post('nama', true)];
+
+        if ($this->units->create($insert)) {
+            $this->session->set_flashdata('success', 'Satuan berhasil ditambahkan');
+        } else {
+            $this->session->set_flashdata('error', 'Oops! Terjadi kesalahan');
+        }
+
+        redirect(base_url('units'));
+    }
+
     /**
      * Edit data satuan oleh admin
      */

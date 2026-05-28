@@ -54,12 +54,20 @@ class Purchaserequest extends MY_Controller
             return redirect('purchaserequest');
         }
 
+        $id_gudang_staff = getUserGudangId();
+        $all_warehouses  = $this->gudangModel->getAllWarehouses();
+        $warehouses      = $id_gudang_staff
+            ? array_values(array_filter($all_warehouses, function ($wh) use ($id_gudang_staff) {
+                return (int) $wh->id === (int) $id_gudang_staff;
+            }))
+            : $all_warehouses;
+
         $data = [
             'title' => 'Buat Purchase Request',
             'breadcrumb_title' => 'Purchase Request',
             'breadcrumb_path' => 'Purchase Request / Buat',
             'page' => 'pages/purchaserequest/create',
-            'warehouses' => $this->gudangModel->getAllWarehouses(),
+            'warehouses' => $warehouses,
             'items' => $this->db->select('barang.id, barang.nama, satuan.nama AS nama_satuan')
                 ->from('barang')
                 ->join('satuan', 'barang.id_satuan = satuan.id', 'left')
@@ -87,6 +95,12 @@ class Purchaserequest extends MY_Controller
 
         if ($this->form_validation->run() == FALSE) {
             $this->session->set_flashdata('error', validation_errors());
+            return redirect('purchaserequest/create');
+        }
+
+        $id_gudang_staff = getUserGudangId();
+        if ($id_gudang_staff && (int) $this->input->post('id_gudang') !== (int) $id_gudang_staff) {
+            $this->session->set_flashdata('error', 'Anda hanya dapat membuat PR untuk gudang Anda sendiri');
             return redirect('purchaserequest/create');
         }
 

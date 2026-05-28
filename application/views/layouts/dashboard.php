@@ -19,6 +19,8 @@
     <link href="<?= base_url('assets/css/icons/font-awesome/css/fontawesome-all.min.css') ?>" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<?= base_url('assets/css/style.min.css') ?>" rel="stylesheet">
+    <!-- Theme overrides -->
+    <link href="<?= base_url('assets/css/theme.css') ?>" rel="stylesheet">
     <!-- Preloader auto-hide fallback & Page wrapper visibility fix -->
     <style>
         .preloader {

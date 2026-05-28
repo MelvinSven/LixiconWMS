@@ -35,12 +35,12 @@
                     </a>
                 </li>
                 <?php if ($this->session->userdata('role') == 'admin'): ?>
-                    <li class="sidebar-item">
+                    <!-- <li class="sidebar-item">
                         <a class="sidebar-link" href="<?= base_url('unit') ?>" aria-expanded="false">
                             <i data-feather="plus-square" class="feather-icon"></i>
                             <span class="hide-menu">Tambah Satuan</span>
                         </a>
-                    </li>
+                    </li> -->
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="<?= base_url('units') ?>" aria-expanded="false">
                             <i data-feather="layers" class="feather-icon"></i>

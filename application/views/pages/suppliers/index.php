@@ -55,27 +55,14 @@
                         </table>
                     </div>
                 </div>
-                <?php if ($this->uri->segment(2) == 'search'): ?>
-                    <div class="card-footer bg-white">
-                        <div class="row">
-                            <div class="col-md-6 col-sm-12 mb-2">
-                                <a href="<?= base_url('suppliers') ?>" class="btn btn-primary btn-rounded text-white"><i
-                                        class="fas fa-angle-left"></i> Daftar Supplier</a>
-                            </div>
-                            <div class="col-md-6 col-sm-12 mb-2 d-flex justify-content-center">
-                                <div class="row d-flex justify-content-center">
-                                    <nav aria-label="Page navigation example">
-                                        <?= $pagination ?>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <div class="row d-flex justify-content-center">
-                        <nav aria-label="Page navigation example">
-                            <?= $pagination ?>
-                        </nav>
+                <?php if (!empty($pagination)): ?>
+                    <div class="wms-pag-footer <?= ($this->uri->segment(2) == 'search') ? 'wms-pag-split' : '' ?>">
+                        <?php if ($this->uri->segment(2) == 'search'): ?>
+                            <a href="<?= base_url('suppliers') ?>" class="btn-reset">
+                                <i class="fas fa-angle-left"></i> Daftar Supplier
+                            </a>
+                        <?php endif ?>
+                        <nav aria-label="Navigasi halaman"><?= $pagination ?></nav>
                     </div>
                 <?php endif ?>
             </div>

@@ -50,13 +50,22 @@
             <!-- ============================================================== -->
             <!-- toggle and nav items -->
             <!-- ============================================================== -->
+            <?php
+            $roleLabels = [
+                'admin'            => 'Super Admin',
+                'staff'            => 'Project Admin',
+                'purchasing_admin' => 'Purchasing Admin',
+            ];
+            $role = $this->session->userdata('role');
+            $roleLabel = $roleLabels[$role] ?? ucwords(str_replace('_', ' ', $role));
+            ?>
             <ul class="navbar-nav float-left mr-auto ml-3 pl-1">
                 <li class="nav-item d-none d-md-block">
-                    <a class="nav-link" href="javascript:void(0)">
-                        <button type="button" class="btn rounded-lg btn-light"><i class="fas fa-user mr-1"></i>
-                            &nbsp;Anda
-                            sebagai
-                            <?= $this->session->userdata('role') ?></button>
+                    <a class="nav-link" href="javascript:void(0)" style="cursor:default;">
+                        <span class="navbar-role-badge">
+                            <i class="fas fa-user"></i>
+                            <?= htmlspecialchars($roleLabel) ?>
+                        </span>
                     </a>
                 </li>
             </ul>

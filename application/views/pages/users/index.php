@@ -425,16 +425,13 @@
                 </div>
 
                 <!-- Pagination footer -->
-                <div
-                    style="padding:16px 20px; border-top:1px solid #f1f5f9; display:flex; align-items:center; justify-content:<?= $this->uri->segment(2) == 'search' ? 'space-between' : 'center' ?>; flex-wrap:wrap; gap:10px;">
+                <div class="wms-pag-footer <?= ($this->uri->segment(2) == 'search') ? 'wms-pag-split' : '' ?>">
                     <?php if ($this->uri->segment(2) == 'search'): ?>
                         <a href="<?= base_url('users') ?>" class="btn-reset">
-                            <i class="fas fa-angle-left" style="margin-right:5px;"></i> Semua Staff
+                            <i class="fas fa-angle-left"></i> Semua Staff
                         </a>
                     <?php endif ?>
-                    <nav aria-label="Navigasi halaman">
-                        <?= $pagination ?>
-                    </nav>
+                    <nav aria-label="Navigasi halaman"><?= $pagination ?></nav>
                 </div>
 
             </div>
