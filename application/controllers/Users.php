@@ -17,6 +17,13 @@ class Users extends MY_Controller
             redirect(base_url('login'));
             return;
         }
+
+        // Manajemen staff/user hanya untuk admin (super-admin)
+        if ($this->session->userdata('role') != 'admin') {
+            $this->session->set_flashdata('warning', 'Anda tidak memiliki akses ke menu manajemen staff');
+            redirect(base_url('home'));
+            return;
+        }
     }
 
     public function index($page = null)

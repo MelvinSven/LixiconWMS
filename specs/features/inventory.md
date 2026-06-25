@@ -1,7 +1,12 @@
 # Inventory (Items, Units, Locations)
 
 - **Status:** Implemented
-- **Personas:** admin (write), staff (read + limited write), purchasing_admin (read)
+- **Personas:** admin (full write), staff / Project Admin (read + register items + update own-warehouse stock), purchasing_admin (**read-only — view items only**)
+
+> **Access summary:**
+> - **admin** — full access: register, edit, delete items; Barang Masuk / Keluar; stock correction on any warehouse.
+> - **staff (Project Admin)** — may register items and correct stock on **their own warehouse** via Update Stok (`warehouse/update_stock`). Has **no** access to Barang Masuk / Keluar (see `stock-inbound.md`, `stock-outbound.md`).
+> - **purchasing_admin (Purchasing Admin)** — **view only**. May not register, edit, or change stock of items. Server guards on `Items::store`, `Items::register`, `Items::update`, and `Warehouse::update_stock` reject `role == 'purchasing_admin'`.
 
 ## Purpose
 
@@ -24,14 +29,16 @@ The master catalog of `barang` (items) the WMS tracks, along with their `satuan`
 6. Deleting an item must also remove orphaned rows from `stok_gudang` (regression fixed in commit `15434bb`).
 7. Units are managed at `/unit` (admin) and listed at `/units`.
 8. Locations are managed at `/locations` with search at `/locations/search`.
+9. `Items::store`, `Items::register`, and `Items::update` reject `role == 'purchasing_admin'` (view-only) and redirect to `/items` with an error flash. The item Edit button in `items/index.php` is already admin-only; the Register Barang sidebar entry is hidden from purchasing_admin.
+10. `role='staff'` corrects own-warehouse stock via the **Update Stok** modal (posts to `warehouse/update_stock`), shown only when `is_staff` (items list) or `can_modify && role != 'purchasing_admin'` (warehouse detail). This is the only stock-mutation path available to staff — Barang Masuk / Keluar are admin-only.
 
 ## Routes
 
 | Route | Controller@method | Who |
 |---|---|---|
 | `GET /items`, `/items/(:num)` | `Items::index` | authenticated |
-| `GET /items/register`, `POST /items/store` | `Items` | admin |
-| `GET /items/warehouse/(:num)[/(:num)]` | `Items::warehouse` | authenticated |
+| `GET /items/register`, `POST /items/store`, `POST /items/update/(:num)` | `Items` | admin, staff (**not** purchasing_admin) |
+| `GET /items/warehouse/(:num)[/(:num)]` | `Items::warehouse` | authenticated (Masuk/Keluar buttons admin-only) |
 | `GET /item/...` | `Item` (detail/edit) | per-row permissions |
 | `GET /unit`, `/units`, `/units/(:num)` | `Unit`, `Units` | admin for write |
 | `GET /locations`, `/locations/(:num)`, `/locations/search[/(:num)]` | `Locations` | authenticated |

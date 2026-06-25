@@ -106,7 +106,7 @@ There are **two** stock tables and both must be kept consistent:
 - **`barang.qty`** — global aggregate, updated by **database triggers**:
   - `tambah_barang` — fires AFTER INSERT on `barang_masuk_detail`
   - `kurangi_barang` — fires BEFORE INSERT on `barang_keluar_detail`
-- **`stok_gudang(id_gudang, id_barang, qty)`** — per-warehouse stock, updated **in PHP code** (not by triggers). Used by transfers, preorders, and anything warehouse-scoped.
+- **`stok_gudang(id_gudang, id_barang, qty)`** — per-warehouse stock, updated **in PHP code** (not by triggers). Used by preorders (Permintaan Barang) and anything warehouse-scoped.
 
 When adding a new inbound/outbound flow, decide which table(s) to update and how.
 
@@ -118,7 +118,6 @@ Defined in `database/database_wms.sql`:
 - Stock: `stok_gudang`, `v_stok_gudang`, `v_ringkasan_gudang`
 - Inbound: `keranjang_masuk`, `barang_masuk`, `barang_masuk_detail`
 - Outbound: `keranjang_keluar`, `barang_keluar`, `barang_keluar_detail`
-- Transfers: `transfer_gudang`, `transfer_gudang_detail`
 - Internal preorder: `permintaan_barang`, `permintaan_barang_detail`, `surat_jalan`, `surat_jalan_detail`
 - Users: `user`
 
@@ -241,7 +240,7 @@ Pointers to per-feature specs under `specs/features/`:
 | Supplier directory | [suppliers.md](specs/features/suppliers.md) | Implemented |
 | Stock inbound (barang masuk) | [stock-inbound.md](specs/features/stock-inbound.md) | Implemented |
 | Stock outbound (barang keluar) | [stock-outbound.md](specs/features/stock-outbound.md) | Implemented |
-| Inter-warehouse transfer | [transfers.md](specs/features/transfers.md) | Implemented |
+| Inter-warehouse transfer | [transfers.md](specs/features/transfers.md) | Deprecated (removed — use Permintaan Barang) |
 | Internal preorder (permintaan barang) | [preorder.md](specs/features/preorder.md) | Implemented |
 | Purchase Request → PO → Goods Receipt | [purchaserequest.md](specs/features/purchaserequest.md) | In progress |
 

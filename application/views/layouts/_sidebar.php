@@ -135,23 +135,6 @@
                     </li>
                     <li class="list-divider"></li>
                 <?php endif ?> -->
-                <!-- <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>
-                    
-                    <li class="nav-small-cap"><span class="hide-menu">Pemindahan Barang</span></li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="<?= base_url('transfer/create') ?>" aria-expanded="false">
-                            <i data-feather="repeat" class="feather-icon"></i>
-                            <span class="hide-menu">Pemindahan Barang</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link sidebar-link" href="<?= base_url('transfer') ?>" aria-expanded="false">
-                            <i data-feather="list" class="feather-icon"></i>
-                            <span class="hide-menu">Riwayat Pemindahan</span>
-                        </a>
-                    </li>
-                    <li class="list-divider"></li>
-                <?php endif ?> -->
 
                 <!-- Submenu Permintaan Barang -->
                 <?php if ($this->session->userdata('role') != 'purchasing_admin'): ?>

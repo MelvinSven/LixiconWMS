@@ -315,6 +315,10 @@
     </div>
 
     <!-- Stock Table -->
+    <?php
+    // Update Stok (koreksi stok gudang sendiri): admin + staff gudang ini. Purchasing hanya melihat.
+    $can_update_stock = $can_modify && $this->session->userdata('role') != 'purchasing_admin';
+    ?>
     <div class="row">
         <div class="col-12">
             <div class="card stock-card">
@@ -333,7 +337,7 @@
                                 </select>
                             </div>
                         <?php endif ?>
-                        <?php if ($can_modify): ?>
+                        <?php if ($this->session->userdata('role') == 'admin'): ?>
                             <button class="btn-tambah-masuk" data-toggle="modal" data-target="#tambahBarangModal">
                                 <i class="fas fa-plus" style="font-size:0.75rem;"></i> Tambah Barang Masuk
                             </button>
@@ -356,7 +360,7 @@
                                     <th>Satuan</th>
                                     <th class="text-center">Stok</th>
                                     <th class="text-center">Status</th>
-                                    <?php if ($can_modify): ?>
+                                    <?php if ($can_update_stock): ?>
                                         <th class="text-center">Aksi</th>
                                     <?php endif ?>
                                 </tr>
@@ -388,7 +392,7 @@
                                                 <span class="dot"></span> <?= $status ?>
                                             </span>
                                         </td>
-                                        <?php if ($can_modify): ?>
+                                        <?php if ($can_update_stock): ?>
                                             <td class="text-center">
                                                 <button class="btn-update-stok" data-toggle="modal"
                                                     data-target="#updateStokModal<?= $stock->id_barang ?>">
@@ -403,7 +407,7 @@
                                 <tr>
                                     <td colspan="3" style="text-align:right; color:#64748b; font-weight:500;">Total Keseluruhan</td>
                                     <td class="text-center"><?= number_format($total_qty) ?></td>
-                                    <td colspan="<?= $can_modify ? 2 : 1 ?>"></td>
+                                    <td colspan="<?= $can_update_stock ? 2 : 1 ?>"></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -414,7 +418,7 @@
     </div>
 </div>
 
-<?php if ($can_modify): ?>
+<?php if ($this->session->userdata('role') == 'admin'): ?>
     <!-- Modal Tambah Barang Masuk -->
     <div class="modal fade" id="tambahBarangModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -458,7 +462,9 @@
             </div>
         </div>
     </div>
+<?php endif ?>
 
+<?php if ($can_update_stock): ?>
     <?php foreach ($stocks as $stock): ?>
         <div class="modal fade" id="updateStokModal<?= $stock->id_barang ?>" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">

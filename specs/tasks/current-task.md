@@ -16,22 +16,44 @@ For the current task, i want to allow Admin (Main Admin not Project Admin) to de
 
 ## Active
 
-**Task:** _(none — fill this in when starting work)_
+**Task:** Restrict Barang Masuk / Barang Keluar to admin only; remove item edit for Purchasing Admin.
 
-**Feature:** _(link to `specs/features/purchaserequests.md`)_
+**Feature:** [stock-inbound.md](../features/stock-inbound.md), [stock-outbound.md](../features/stock-outbound.md), [inventory.md](../features/inventory.md)
 
 **Goal:**
-- The Purchase Request deleted should be deleted from the database and not shown in the Daftar Purchase Request.
+- Project Admin (`staff`) and Purchasing Admin (`purchasing_admin`) have **no access** to add stock via Barang Masuk or decrease stock via Barang Keluar — admin only.
+- Project Admin keeps the ability to correct stock on **his own warehouse** (Update Stok → `warehouse/update_stock`).
+- Purchasing Admin is **view-only** for items (no register/edit/stock change).
 
 **Checklist:**
-- [ ] ...
-- [ ] ...
+- [x] `Cartin::__construct` — reject non-admin (whole barang masuk controller).
+- [x] `Cartout::__construct` — reject non-admin (whole barang keluar controller).
+- [x] `Items::store` / `register` / `update` — reject `purchasing_admin`.
+- [x] `Warehouse::update_stock` — reject `purchasing_admin` (id_gudang check alone bypassable when id_gudang null).
+- [x] `warehouses/detail.php` — Tambah Barang Masuk → admin only; Update Stok → `can_modify && role != purchasing_admin`.
+- [x] `items/warehouse.php` — Masuk / Keluar buttons + modals → admin only.
+- [x] Specs updated (inbound/outbound personas → admin only; inventory access summary).
 
 **Notes / decisions:**
-- ...
+- Sidebar Barang Masuk / Keluar menus were already fully commented out; admin reaches the flow via warehouse detail + items/warehouse buttons.
+- `Items::store`/`register` kept open to `staff` (Project Admin still registers items) — only `purchasing_admin` blocked.
+- `php -l` clean on all six edited PHP files. Server-side guards are the enforcement; view gates are cosmetic.
 
 **Blockers:**
-- ...
+- none
+
+---
+
+### Follow-up: remove old Transfer (Pemindahan Barang) feature
+
+Superseded by Permintaan Barang (internal preorder).
+
+- [x] Deleted `controllers/Transfer.php`, `models/Transfer_model.php`, `views/pages/transfers/`.
+- [x] Removed `/transfer*` routes and the (commented) sidebar entry.
+- [x] Removed dashboard "Riwayat Pemindahan" panel — `Home::index` (`transferModel` load + `dashboard_transfers`) and `home/index.php` table + JS init.
+- [x] Marked `specs/features/transfers.md` Deprecated/removed; updated CLAUDE.md feature index + §5 notes.
+- [x] **DB tables dropped** — `transfer_gudang` / `transfer_gudang_detail` + `transfer_barang_gudang` trigger removed from base schema (`database_wms.sql`); `database/migration_drop_transfer.sql` drops them on existing DBs. Dead transfer guards/cleanup removed from `Warehouse::delete`.
+- Left `login.php` marketing copy ("transfer gudang") and Preorder.php code comments (word "transfer") untouched — not the feature.
 
 ---
 

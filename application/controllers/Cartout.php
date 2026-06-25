@@ -20,6 +20,13 @@ class Cartout extends MY_Controller
             redirect(base_url('login'));
             return;
         }
+
+        // Barang Keluar hanya untuk admin (Project Admin & Purchasing tidak punya akses)
+        if ($this->session->userdata('role') != 'admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak! Hanya admin yang dapat mengeluarkan barang.');
+            redirect(base_url('items'));
+            return;
+        }
     }
 
     public function index()

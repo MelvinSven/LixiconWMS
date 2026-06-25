@@ -123,21 +123,7 @@ class Warehouse extends MY_Controller
             return;
         }
 
-        // ── Guard 3: riwayat transfer yang belum sampai ───────────────────────
-        $transfer = $this->db
-            ->group_start()
-            ->where('id_gudang_asal', $id)
-            ->or_where('id_gudang_tujuan', $id)
-            ->group_end()
-            ->where('status !=', 'sampai')
-            ->count_all_results('transfer_gudang');
-        if ($transfer > 0) {
-            $this->session->set_flashdata('error', 'Tidak dapat menghapus gudang yang masih memiliki pemindahan barang yang belum sampai');
-            redirect(base_url('warehouses'));
-            return;
-        }
-
-        // ── Guard 4: staff yang di-assign ke gudang ini ───────────────────────
+        // ── Guard 3: staff yang di-assign ke gudang ini ───────────────────────
         $staff = $this->db
             ->where('id_gudang', $id)
             ->count_all_results('user');
@@ -147,7 +133,7 @@ class Warehouse extends MY_Controller
             return;
         }
 
-        // ── Guard 5: detail barang masuk / keluar / keranjang ─────────────────
+        // ── Guard 4: detail barang masuk / keluar / keranjang ─────────────────
         $detail_masuk = $this->db->where('id_gudang', $id)->count_all_results('barang_masuk_detail');
         if ($detail_masuk > 0) {
             $this->session->set_flashdata('error', 'Tidak dapat menghapus gudang yang masih memiliki riwayat barang masuk');
@@ -170,12 +156,6 @@ class Warehouse extends MY_Controller
             ->update('permintaan_barang', ['id_gudang_asal' => null]);
         $this->db->where('id_gudang_tujuan', $id)->where('status', 'selesai')
             ->update('permintaan_barang', ['id_gudang_tujuan' => null]);
-
-        // Nullify completed transfer references
-        $this->db->where('id_gudang_asal', $id)->where('status', 'sampai')
-            ->update('transfer_gudang', ['id_gudang_asal' => null]);
-        $this->db->where('id_gudang_tujuan', $id)->where('status', 'sampai')
-            ->update('transfer_gudang', ['id_gudang_tujuan' => null]);
 
         // Clean up zero-qty stok records
         $this->db->where('id_gudang', $id)->delete('stok_gudang');
@@ -202,6 +182,13 @@ class Warehouse extends MY_Controller
         if (!$_POST) {
             $this->session->set_flashdata('error', 'Akses tidak diizinkan');
             redirect(base_url('warehouses'));
+            return;
+        }
+
+        // Purchasing Admin hanya boleh melihat barang (tidak boleh mengubah stok)
+        if ($this->session->userdata('role') == 'purchasing_admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak! Anda hanya dapat melihat barang.');
+            redirect(base_url('items'));
             return;
         }
 

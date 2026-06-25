@@ -12,7 +12,6 @@ class Home extends MY_Controller
         parent::__construct();
 
         $this->load->model('Preorder_model', 'preorderModel');
-        $this->load->model('Transfer_model', 'transferModel');
 
         $is_login = $this->session->userdata('is_login');
 
@@ -138,13 +137,6 @@ class Home extends MY_Controller
         // Preorder dashboard tables — client-side JS handles pagination (5 rows/page)
         $data['dashboard_permintaan_aktif'] = $this->preorderModel->getDashboardPermintaan('active', 50, $filter_date);
         $data['dashboard_riwayat_permintaan'] = $this->preorderModel->getDashboardPermintaan('history', 50, $filter_date);
-
-        // Transfer history for dashboard — fetch up to 50 records, JS paginates at 5/page
-        if (!empty($filter_date)) {
-            $data['dashboard_transfers'] = $this->transferModel->getTransfersByDate($filter_date);
-        } else {
-            $data['dashboard_transfers'] = $this->transferModel->getAllTransfers();
-        }
 
         $data['page'] = 'pages/home/index';
 

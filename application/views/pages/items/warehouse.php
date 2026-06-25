@@ -463,8 +463,8 @@
                                  class="stock-item-image">
                         </div>
 
-                        <!-- Action buttons (own warehouse only) -->
-                        <?php if ($is_own_warehouse): ?>
+                        <!-- Action buttons (Barang Masuk/Keluar: admin only) -->
+                        <?php if ($this->session->userdata('role') == 'admin'): ?>
                             <div class="stock-item-actions">
                                 <button type="button" class="btn-stock-in"
                                     data-toggle="modal" data-target="#barangMasukModal<?= $row->id_barang ?>">
@@ -481,7 +481,7 @@
                     </div>
                 </div>
 
-                <?php if ($is_own_warehouse): ?>
+                <?php if ($this->session->userdata('role') == 'admin'): ?>
                 <!-- Modal Barang Masuk -->
                 <div class="modal fade" id="barangMasukModal<?= $row->id_barang ?>" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">

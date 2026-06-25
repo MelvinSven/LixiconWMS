@@ -1,7 +1,15 @@
 # Inter-Warehouse Transfer (Pemindahan Barang)
 
-- **Status:** Implemented
-- **Personas:** admin (cross-warehouse), staff (originating from their warehouse)
+- **Status:** Deprecated — **removed** (2026-06-25)
+- **Personas:** _(none — feature removed)_
+
+> **Removed.** The standalone Transfer (Pemindahan Barang) feature was deleted. Inter-warehouse movement is now handled by **Permintaan Barang (internal preorder)** — see [preorder.md](preorder.md), which adds an approve / surat-jalan / verify workflow the old immediate transfer lacked.
+>
+> Deleted in this change: `controllers/Transfer.php`, `models/Transfer_model.php`, `views/pages/transfers/`, the `/transfer*` routes, the sidebar entry, and the dashboard "Riwayat Pemindahan" panel (`Home` + `home/index.php`).
+>
+> **DB dropped:** tables `transfer_gudang` / `transfer_gudang_detail` and the `transfer_barang_gudang` trigger were removed from the base schema (`database/database_wms.sql`) and are dropped on existing databases via `database/migration_drop_transfer.sql`. The now-dead transfer guards/cleanup were removed from `Warehouse::delete`.
+>
+> The original spec is retained below as a historical record.
 
 ## Purpose
 

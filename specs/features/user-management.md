@@ -1,7 +1,7 @@
 # User (Staff) Management
 
 - **Status:** Implemented
-- **Personas:** admin (write), all (read-only list)
+- **Personas:** admin only (view + write). `staff` and `purchasing_admin` have no access.
 
 ## Purpose
 
@@ -11,11 +11,11 @@ Admins manage who has access to the WMS: creating accounts, assigning roles (`st
 
 - As an **admin**, I want to register a new staff user with a role and warehouse assignment.
 - As an **admin**, I want to edit or deactivate existing users.
-- As any **user**, I want to see a list of staff (read-only) for coordination.
+- As an **admin**, I want to see the list of staff; `staff` and `purchasing_admin` must not access it.
 
 ## Acceptance criteria
 
-1. `/users` lists all users with pagination.
+1. `/users` lists all users with pagination; admin-only — `staff`/`purchasing_admin` are redirected to `/home` with a warning. The dashboard "Staff" stat card is hidden for non-admin.
 2. `/register` is admin-only; form captures `nama`, `email`, `password`, `role`, `id_gudang`.
 3. `role` must be one of `admin`, `staff`, `purchasing_admin` (validated server-side).
 4. If `role=admin`, `id_gudang` is forced to `NULL`.
@@ -26,7 +26,7 @@ Admins manage who has access to the WMS: creating accounts, assigning roles (`st
 
 | Route | Controller@method | Who |
 |---|---|---|
-| `GET /users`, `GET /users/(:num)` | `Users::index` | authenticated |
+| `GET /users`, `GET /users/(:num)` | `Users::index` | admin only |
 | `GET /user/...` | `User` (edit/delete actions) | admin only |
 | `GET /register`, `POST /register` | `Register` | admin only |
 

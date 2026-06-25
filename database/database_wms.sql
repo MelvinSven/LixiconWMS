@@ -425,77 +425,6 @@ CREATE TABLE `surat_jalan_detail` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transfer_gudang`
---
-
-CREATE TABLE `transfer_gudang` (
-  `id` int(11) NOT NULL,
-  `kode_transfer` varchar(30) NOT NULL,
-  `id_gudang_asal` int(11) DEFAULT NULL,
-  `id_gudang_tujuan` int(11) DEFAULT NULL,
-  `id_user` int(11) NOT NULL,
-  `waktu` datetime NOT NULL DEFAULT current_timestamp(),
-  `keterangan` text DEFAULT NULL,
-  `bukti_foto` varchar(255) DEFAULT NULL,
-  `nama_kurir` varchar(100) DEFAULT NULL,
-  `status` enum('dikirim','sampai') NOT NULL DEFAULT 'dikirim'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `transfer_gudang`
---
-
-INSERT INTO `transfer_gudang` (`id`, `kode_transfer`, `id_gudang_asal`, `id_gudang_tujuan`, `id_user`, `waktu`, `keterangan`, `bukti_foto`, `nama_kurir`, `status`) VALUES
-(61, 'TRF-20260226-0001', 2, 6, 1, '2026-02-26 16:34:52', 'tes', NULL, 'Budiawan Setiawan', 'sampai');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `transfer_gudang_detail`
---
-
-CREATE TABLE `transfer_gudang_detail` (
-  `id` int(11) NOT NULL,
-  `id_transfer` int(11) NOT NULL,
-  `id_barang` int(11) NOT NULL,
-  `qty` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `transfer_gudang_detail`
---
-
-INSERT INTO `transfer_gudang_detail` (`id`, `id_transfer`, `id_barang`, `qty`) VALUES
-(67, 61, 70, 8);
-
---
--- Triggers `transfer_gudang_detail`
---
-DELIMITER $$
-CREATE TRIGGER `transfer_barang_gudang` AFTER INSERT ON `transfer_gudang_detail` FOR EACH ROW BEGIN
-  DECLARE gudang_asal INT;
-  DECLARE gudang_tujuan INT;
-  
-  -- Ambil id gudang asal dan tujuan dari header transfer
-  SELECT id_gudang_asal, id_gudang_tujuan INTO gudang_asal, gudang_tujuan
-  FROM transfer_gudang WHERE id = NEW.id_transfer;
-  
-  -- Kurangi stok di gudang asal
-  UPDATE stok_gudang 
-  SET qty = qty - NEW.qty 
-  WHERE id_gudang = gudang_asal AND id_barang = NEW.id_barang;
-  
-  -- Tambah stok di gudang tujuan
-  INSERT INTO stok_gudang (id_gudang, id_barang, qty)
-  VALUES (gudang_tujuan, NEW.id_barang, NEW.qty)
-  ON DUPLICATE KEY UPDATE qty = qty + NEW.qty;
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `user`
 --
 
@@ -700,24 +629,6 @@ ALTER TABLE `surat_jalan_detail`
   ADD KEY `fk_sjd_barang` (`id_barang`);
 
 --
--- Indexes for table `transfer_gudang`
---
-ALTER TABLE `transfer_gudang`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uk_kode_transfer` (`kode_transfer`),
-  ADD KEY `fk_tg_gudang_asal` (`id_gudang_asal`),
-  ADD KEY `fk_tg_gudang_tujuan` (`id_gudang_tujuan`),
-  ADD KEY `fk_tg_user` (`id_user`);
-
---
--- Indexes for table `transfer_gudang_detail`
---
-ALTER TABLE `transfer_gudang_detail`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_tgd_transfer` (`id_transfer`),
-  ADD KEY `fk_tgd_barang` (`id_barang`);
-
---
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -825,18 +736,6 @@ ALTER TABLE `surat_jalan_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `transfer_gudang`
---
-ALTER TABLE `transfer_gudang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
-
---
--- AUTO_INCREMENT for table `transfer_gudang_detail`
---
-ALTER TABLE `transfer_gudang_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
-
---
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
@@ -932,21 +831,6 @@ ALTER TABLE `surat_jalan`
 ALTER TABLE `surat_jalan_detail`
   ADD CONSTRAINT `fk_sjd_barang` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id`),
   ADD CONSTRAINT `fk_sjd_surat_jalan` FOREIGN KEY (`id_surat_jalan`) REFERENCES `surat_jalan` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `transfer_gudang`
---
-ALTER TABLE `transfer_gudang`
-  ADD CONSTRAINT `fk_tg_gudang_asal` FOREIGN KEY (`id_gudang_asal`) REFERENCES `gudang` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_tg_gudang_tujuan` FOREIGN KEY (`id_gudang_tujuan`) REFERENCES `gudang` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_tg_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `transfer_gudang_detail`
---
-ALTER TABLE `transfer_gudang_detail`
-  ADD CONSTRAINT `fk_tgd_barang` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_tgd_transfer` FOREIGN KEY (`id_transfer`) REFERENCES `transfer_gudang` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user`

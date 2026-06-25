@@ -414,6 +414,13 @@ class Items extends MY_Controller
 
     public function store()
     {
+        // Purchasing Admin hanya boleh melihat barang (tidak boleh menambah/mengubah)
+        if ($this->session->userdata('role') == 'purchasing_admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak! Anda hanya dapat melihat barang.');
+            redirect(base_url('items'));
+            return;
+        }
+
         // Load library upload
         $this->load->library('upload');
         $this->load->model('Stokgudang_model', 'stokgudang');
@@ -489,6 +496,13 @@ class Items extends MY_Controller
 
     public function register()
     {
+        // Purchasing Admin hanya boleh melihat barang (tidak boleh menambah/mengubah)
+        if ($this->session->userdata('role') == 'purchasing_admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak! Anda hanya dapat melihat barang.');
+            redirect(base_url('items'));
+            return;
+        }
+
         $data['title'] = 'Register Barang';
         $data['breadcrumb_title'] = 'Register Barang';
         $data['breadcrumb_path'] = 'Pendataan Barang / Register Barang';
@@ -504,6 +518,13 @@ class Items extends MY_Controller
 
     public function update($id)
     {
+        // Purchasing Admin hanya boleh melihat barang (tidak boleh mengubah/edit)
+        if ($this->session->userdata('role') == 'purchasing_admin') {
+            $this->session->set_flashdata('error', 'Akses ditolak! Anda hanya dapat melihat barang.');
+            redirect(base_url('items'));
+            return;
+        }
+
         // Ambil data lama dari database
         $barang = $this->barang->getById($id);
         $image_name = $barang->image; // default pakai gambar lama

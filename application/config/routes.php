@@ -76,13 +76,6 @@ $route['warehouse/update_stock'] = 'warehouse/update_stock';
 $route['items/warehouse/(:num)'] = 'items/warehouse/$1';
 $route['items/warehouse/(:num)/(:num)'] = 'items/warehouse/$1/$2';
 
-// Routes untuk Transfer Barang
-$route['transfer'] = 'transfer/index';
-$route['transfer/create'] = 'transfer/create';
-$route['transfer/store'] = 'transfer/store';
-$route['transfer/detail/(:num)'] = 'transfer/detail/$1';
-$route['transfer/getStokByGudang/(:num)'] = 'transfer/getStokByGudang/$1';
-
 // Routes untuk Lokasi Barang
 $route['locations'] = 'locations/index';
 $route['locations/(:num)'] = 'locations/index/$1';

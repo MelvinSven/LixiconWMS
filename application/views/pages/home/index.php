@@ -209,6 +209,7 @@
 
     <!-- ── Stat Cards Row 1 ── -->
     <div class="row stat-row mb-2">
+        <?php if ($this->session->userdata('role') == 'admin'): ?>
         <div class="col-12 col-md-4 mb-2">
             <a href="<?= base_url('users') ?>" class="db-stat-card">
                 <div class="db-stat-icon blue"><i class="fas fa-users"></i></div>
@@ -218,6 +219,7 @@
                 </div>
             </a>
         </div>
+        <?php endif ?>
         <div class="col-12 col-md-4 mb-2">
             <a href="<?= base_url('items') ?>" class="db-stat-card">
                 <div class="db-stat-icon violet"><i class="fas fa-boxes"></i></div>
@@ -513,66 +515,6 @@
             </div>
         </div>
 
-        <!-- Riwayat Transfer -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="db-table-card">
-                    <div class="db-table-header">
-                        <h5 class="db-table-title"><i class="fas fa-exchange-alt" style="color:#0284c7; margin-right:8px;"></i>Riwayat Pemindahan Barang</h5>
-                        <a href="<?= base_url('transfer') ?>" class="db-view-all">
-                            Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.65rem;"></i>
-                        </a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="db-table" id="tblRiwayatTransfer">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Kode</th>
-                                    <th>Gudang Asal</th>
-                                    <th>Gudang Tujuan</th>
-                                    <th>Waktu</th>
-                                    <th>User</th>
-                                    <th class="text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($dashboard_transfers)): ?>
-                                    <tr>
-                                        <td colspan="7">
-                                            <div class="db-table-empty">
-                                                <div><i class="fas fa-inbox"></i></div>
-                                                <p>Belum ada data pemindahan barang</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php $no = 1; foreach ($dashboard_transfers as $t): ?>
-                                        <tr>
-                                            <td class="row-num"><?= $no++ ?></td>
-                                            <td><span class="kode-pill"><?= $t->kode_transfer ?></span></td>
-                                            <td><?= htmlspecialchars($t->nama_gudang_asal ?? '-') ?></td>
-                                            <td><?= htmlspecialchars($t->nama_gudang_tujuan ?? '-') ?></td>
-                                            <td><?= date('d M Y H:i', strtotime($t->waktu)) ?></td>
-                                            <td><?= htmlspecialchars($t->nama_user ?? '-') ?></td>
-                                            <td class="text-center">
-                                                <?php $st = ($t->status === 'sampai') ? 'sampai' : 'dikirim'; ?>
-                                                <span class="db-badge <?= $st ?>">
-                                                    <span class="dot"></span>
-                                                    <?= $st === 'sampai' ? 'Sampai' : 'Dikirim' ?>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach ?>
-                                <?php endif ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="db-pagination" id="paginationRiwayatTransfer"></div>
-                </div>
-            </div>
-        </div>
-
     <?php endif ?>
 </div>
 
@@ -625,6 +567,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initPagination('tblPermintaanAktif',    'paginationPermintaanAktif',    5);
     initPagination('tblRiwayatPermintaan',   'paginationRiwayatPermintaan',  5);
-    initPagination('tblRiwayatTransfer',     'paginationRiwayatTransfer',    5);
 });
 </script>
